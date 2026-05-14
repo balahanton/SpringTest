@@ -4,21 +4,22 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "users", schema = "spring_test")
-public class User {
+@Table(name = "deliveries", schema = "spring_test")
+public class Delivery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String username;
+    @Column(name = "address", nullable = false)
+    private String address;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
+    @OneToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 }
