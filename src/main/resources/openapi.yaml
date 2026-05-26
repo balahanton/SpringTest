@@ -6,6 +6,8 @@ info:
 paths:
   /api/users:
     post:
+      tags:
+        - Users
       summary: Создать пользователя
       operationId: createUser
       requestBody:
@@ -24,6 +26,8 @@ paths:
 
   /api/users/{id}:
     get:
+      tags:
+        - Users
       summary: Получить пользователя по id
       operationId: getUserById
       parameters:
@@ -44,6 +48,8 @@ paths:
           description: Not found
 
     put:
+      tags:
+        - Users
       summary: Обновить пользователя
       operationId: updateUser
       parameters:
@@ -70,6 +76,8 @@ paths:
           description: Not found
 
     delete:
+      tags:
+        - Users
       summary: Удалить пользователя
       operationId: deleteUser
       parameters:
@@ -87,6 +95,8 @@ paths:
 
   /api/categories:
     post:
+      tags:
+        - Categories
       summary: Создать категорию
       operationId: createCategory
       requestBody:
@@ -105,6 +115,8 @@ paths:
 
   /api/categories/{id}:
     get:
+      tags:
+        - Categories
       summary: Получить категорию по id
       operationId: getCategoryById
       parameters:
@@ -125,6 +137,8 @@ paths:
           description: Not found
 
     put:
+      tags:
+        - Categories
       summary: Обновить категорию
       operationId: updateCategory
       parameters:
@@ -151,6 +165,8 @@ paths:
           description: Not found
 
     delete:
+      tags:
+        - Categories
       summary: Удалить категорию
       operationId: deleteCategory
       parameters:
@@ -168,6 +184,8 @@ paths:
 
   /api/products:
     post:
+      tags:
+        - Products
       summary: Создать товар
       operationId: createProduct
       requestBody:
@@ -186,6 +204,8 @@ paths:
 
   /api/products/{id}:
     get:
+      tags:
+        - Products
       summary: Получить товар по id
       operationId: getProductById
       parameters:
@@ -206,6 +226,8 @@ paths:
           description: Not found
 
     put:
+      tags:
+        - Products
       summary: Обновить товар
       operationId: updateProduct
       parameters:
@@ -232,6 +254,8 @@ paths:
           description: Not found
 
     delete:
+      tags:
+        - Products
       summary: Удалить товар
       operationId: deleteProduct
       parameters:
@@ -249,6 +273,8 @@ paths:
 
   /api/carts:
     post:
+      tags:
+        - Carts
       summary: Создать корзину
       operationId: createCart
       requestBody:
@@ -267,6 +293,8 @@ paths:
 
   /api/carts/{id}:
     get:
+      tags:
+        - Carts
       summary: Получить корзину по id
       operationId: getCartById
       parameters:
@@ -287,6 +315,8 @@ paths:
           description: Not found
 
     delete:
+      tags:
+        - Carts
       summary: Удалить корзину
       operationId: deleteCart
       parameters:
@@ -304,6 +334,8 @@ paths:
 
   /api/orders:
     post:
+      tags:
+        - Orders
       summary: Создать заказ
       operationId: createOrder
       requestBody:
@@ -322,6 +354,8 @@ paths:
 
   /api/orders/{id}:
     get:
+      tags:
+        - Orders
       summary: Получить заказ по id
       operationId: getOrderById
       parameters:
@@ -342,6 +376,8 @@ paths:
           description: Not found
 
     delete:
+      tags:
+        - Orders
       summary: Удалить заказ
       operationId: deleteOrder
       parameters:
@@ -359,6 +395,8 @@ paths:
 
   /api/deliveries:
     post:
+      tags:
+        - Deliveries
       summary: Создать доставку
       operationId: createDelivery
       requestBody:
@@ -377,6 +415,8 @@ paths:
 
   /api/deliveries/{id}:
     get:
+      tags:
+        - Deliveries
       summary: Получить доставку по id
       operationId: getDeliveryById
       parameters:
@@ -397,6 +437,8 @@ paths:
           description: Not found
 
     put:
+      tags:
+        - Deliveries
       summary: Обновить доставку
       operationId: updateDelivery
       parameters:
@@ -423,6 +465,8 @@ paths:
           description: Not found
 
     delete:
+      tags:
+        - Deliveries
       summary: Удалить доставку
       operationId: deleteDelivery
       parameters:
