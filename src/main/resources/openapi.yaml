@@ -23,6 +23,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
+    get:
+      tags:
+        - Users
+      summary: Получить всех пользователей
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
 
   /api/users/{id}:
     get:
@@ -112,6 +126,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CategoryResponse'
+    get:
+      tags:
+        - Categories
+      summary: Получить все категории
+      operationId: getAllCategories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
 
   /api/categories/{id}:
     get:
@@ -201,6 +229,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductResponse'
+    get:
+      tags:
+        - Products
+      summary: Получить все товары
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
 
   /api/products/{id}:
     get:
@@ -290,6 +332,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CartResponse'
+    get:
+      tags:
+        - Carts
+      summary: Получить все корзины
+      operationId: getAllCarts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartResponse'
 
   /api/carts/{id}:
     get:
@@ -351,6 +407,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+    get:
+      tags:
+        - Orders
+      summary: Получить все заказы
+      operationId: getAllOrders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponse'
 
   /api/orders/{id}:
     get:
@@ -412,6 +482,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeliveryResponse'
+    get:
+      tags:
+        - Deliveries
+      summary: Получить все доставки
+      operationId: getAllDeliveries
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryResponse'
 
   /api/deliveries/{id}:
     get:
@@ -521,8 +605,9 @@ components:
           type: string
         price:
           type: number
-        category:
-          $ref: '#/components/schemas/CategoryRequest'
+        categoryId:
+          type: string
+          format: uuid
 
     ProductResponse:
       type: object
@@ -540,10 +625,11 @@ components:
     CartRequest:
       type: object
       properties:
-        products:
+        productIds:
           type: array
           items:
-            $ref: '#/components/schemas/ProductRequest'
+            type: string
+            format: uuid
 
     CartResponse:
       type: object
