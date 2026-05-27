@@ -657,9 +657,8 @@ components:
         id:
           type: string
           format: uuid
-        userId:
-          type: string
-          format: uuid
+        user:
+          $ref: '#/components/schemas/UserResponse'
         delivery:
           $ref: '#/components/schemas/DeliveryResponse'
 

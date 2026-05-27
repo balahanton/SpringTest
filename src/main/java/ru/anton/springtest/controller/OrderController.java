@@ -9,6 +9,7 @@ import ru.anton.springtest.api.OrdersApi;
 import ru.anton.springtest.dto.DeliveryResponse;
 import ru.anton.springtest.dto.OrderRequest;
 import ru.anton.springtest.dto.OrderResponse;
+import ru.anton.springtest.dto.UserResponse;
 import ru.anton.springtest.model.Delivery;
 import ru.anton.springtest.model.Order;
 import ru.anton.springtest.model.User;
@@ -68,9 +69,13 @@ public class OrderController implements OrdersApi {
         deliveryResponse.setId(order.getDelivery().getId());
         deliveryResponse.setAddress(order.getDelivery().getAddress());
 
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(order.getUser().getId());
+        userResponse.setUsername(order.getUser().getUsername());
+
         OrderResponse response = new OrderResponse();
         response.setId(order.getId());
-        response.setUserId(order.getUser().getId());
+        response.setUser(userResponse);
         response.setDelivery(deliveryResponse);
 
         return response;
