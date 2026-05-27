@@ -3,6 +3,7 @@ package ru.anton.springtest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import ru.anton.springtest.api.OrdersApi;
 import ru.anton.springtest.dto.DeliveryResponse;
@@ -41,6 +42,7 @@ public class OrderController implements OrdersApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
         List<OrderResponse> orderResponseList = orderService.findAll().stream()
@@ -49,6 +51,7 @@ public class OrderController implements OrdersApi {
         return ResponseEntity.ok(orderResponseList);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<OrderResponse> getOrderById(UUID id) {
         return ResponseEntity.ok(toResponse(orderService.findById(id)));

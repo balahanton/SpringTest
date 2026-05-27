@@ -3,6 +3,7 @@ package ru.anton.springtest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import ru.anton.springtest.api.CartsApi;
 import ru.anton.springtest.dto.CartRequest;
@@ -38,6 +39,7 @@ public class CartController implements CartsApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(saved));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<List<CartResponse>> getAllCarts() {
         List<CartResponse> cartResponseList = cartService.findAll().stream()
@@ -46,6 +48,7 @@ public class CartController implements CartsApi {
         return ResponseEntity.ok(cartResponseList);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseEntity<CartResponse> getCartById(UUID id) {
         return ResponseEntity.ok(toResponse(cartService.findById(id)));
