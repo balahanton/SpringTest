@@ -6,6 +6,8 @@ info:
 tags:
   - name: user-controller
     description: Управление пользователями и их заказами
+  - name: warehouse-controller
+    description: Управление складами и товарами
 
 paths:
   /api/v1/users:
@@ -121,6 +123,114 @@ paths:
         '204':
           description: Пользователь и его заказы успешно удалены
 
+  /api/v1/warehouses:
+    post:
+      tags:
+        - warehouse-controller
+      summary: Создать склад вместе с товарами
+      operationId: createWarehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarehouseCreateDto'
+      responses:
+        '201':
+          description: Склад успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarehouseResponseDto'
+    get:
+      tags:
+        - warehouse-controller
+      summary: Получить список складов с товарами
+      operationId: getAllWarehouses
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список складов получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WarehouseResponseDto'
+
+  /api/v1/warehouses/{id}:
+    get:
+      tags:
+        - warehouse-controller
+      summary: Получить склад по ID со всеми товарами
+      operationId: getWarehouseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Склад найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarehouseResponseDto'
+    put:
+      tags:
+        - warehouse-controller
+      summary: Обновить склад и список его товаров
+      operationId: updateWarehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarehouseUpdateDto'
+      responses:
+        '200':
+          description: Склад обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarehouseResponseDto'
+    delete:
+      tags:
+        - warehouse-controller
+      summary: Мягкое каскадное удаление склада и его связей с товарами
+      operationId: deleteWarehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Склад успешно удален
+
 components:
   schemas:
     UserCreateDto:
@@ -186,3 +296,73 @@ components:
           format: uuid
         description:
           type: string
+
+    WarehouseCreateDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCreateDto'
+
+    ProductCreateDto:
+      type: object
+      required:
+        - title
+        - price
+      properties:
+        title:
+          type: string
+        price:
+          type: number
+
+    WarehouseUpdateDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductUpdateDto'
+
+    ProductUpdateDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        price:
+          type: number
+
+    WarehouseResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponseDto'
+
+    ProductResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        price:
+          type: number
