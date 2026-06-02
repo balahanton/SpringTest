@@ -3,46 +3,70 @@ info:
   title: Shop API
   version: 1.0.0
 
+tags:
+  - name: user-controller
+    description: Управление пользователями и их заказами
+  - name: warehouse-controller
+    description: Управление складами и товарами
+  - name: delivery-controller
+    description: Управление доставками и их деталями
+
 paths:
-  /api/users:
+  /api/v1/users:
     post:
       tags:
-        - Users
-      summary: Создать пользователя
+        - user-controller
+      summary: Создать пользователя вместе с его заказами
       operationId: createUser
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: '#/components/schemas/UserCreateDto'
       responses:
         '201':
-          description: Created
+          description: Пользователь и заказы успешно созданы
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: '#/components/schemas/UserResponseDto'
+
     get:
       tags:
-        - Users
-      summary: Получить всех пользователей
+        - user-controller
+      summary: Получить список пользователей с вложенными заказами
       operationId: getAllUsers
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: Номер страницы
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          description: Количество пользователей
       responses:
         '200':
-          description: OK
+          description: Список успешно получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserResponse'
+                  $ref: '#/components/schemas/UserResponseDto'
 
-  /api/users/{id}:
+  /api/v1/users/{id}:
     get:
       tags:
-        - Users
-      summary: Получить пользователя по id
+        - user-controller
+      summary: Получить пользователя по ID с его заказами
       operationId: getUserById
       parameters:
         - name: id
@@ -53,18 +77,16 @@ paths:
             format: uuid
       responses:
         '200':
-          description: OK
+          description: Пользователь найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
-          description: Not found
+                $ref: '#/components/schemas/UserResponseDto'
 
     put:
       tags:
-        - Users
-      summary: Обновить пользователя
+        - user-controller
+      summary: Обновить данные пользователя и его заказов
       operationId: updateUser
       parameters:
         - name: id
@@ -78,21 +100,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: '#/components/schemas/UserUpdateDto'
       responses:
         '200':
-          description: OK
+          description: Данные успешно обновлены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
-          description: Not found
+                $ref: '#/components/schemas/UserResponseDto'
 
     delete:
       tags:
-        - Users
-      summary: Удалить пользователя
+        - user-controller
+      summary: Удаленить пользователя и его заказы
       operationId: deleteUser
       parameters:
         - name: id
@@ -103,50 +123,61 @@ paths:
             format: uuid
       responses:
         '204':
-          description: No content
-        '404':
-          description: Not found
+          description: Пользователь и его заказы успешно удалены
 
-  /api/categories:
+  /api/v1/warehouses:
     post:
       tags:
-        - Categories
-      summary: Создать категорию
-      operationId: createCategory
+        - warehouse-controller
+      summary: Создать склад вместе с товарами
+      operationId: createWarehouse
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CategoryRequest'
+              $ref: '#/components/schemas/WarehouseCreateDto'
       responses:
         '201':
-          description: Created
+          description: Склад успешно создан
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CategoryResponse'
+                $ref: '#/components/schemas/WarehouseResponseDto'
     get:
       tags:
-        - Categories
-      summary: Получить все категории
-      operationId: getAllCategories
+        - warehouse-controller
+      summary: Получить список складов с товарами
+      operationId: getAllWarehouses
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
-          description: OK
+          description: Список складов получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CategoryResponse'
+                  $ref: '#/components/schemas/WarehouseResponseDto'
 
-  /api/categories/{id}:
+  /api/v1/warehouses/{id}:
     get:
       tags:
-        - Categories
-      summary: Получить категорию по id
-      operationId: getCategoryById
+        - warehouse-controller
+      summary: Получить склад по ID со всеми товарами
+      operationId: getWarehouseById
       parameters:
         - name: id
           in: path
@@ -156,19 +187,16 @@ paths:
             format: uuid
       responses:
         '200':
-          description: OK
+          description: Склад найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CategoryResponse'
-        '404':
-          description: Not found
-
+                $ref: '#/components/schemas/WarehouseResponseDto'
     put:
       tags:
-        - Categories
-      summary: Обновить категорию
-      operationId: updateCategory
+        - warehouse-controller
+      summary: Обновить склад и список его товаров
+      operationId: updateWarehouse
       parameters:
         - name: id
           in: path
@@ -181,22 +209,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CategoryRequest'
+              $ref: '#/components/schemas/WarehouseUpdateDto'
       responses:
         '200':
-          description: OK
+          description: Склад обновлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CategoryResponse'
-        '404':
-          description: Not found
-
+                $ref: '#/components/schemas/WarehouseResponseDto'
     delete:
       tags:
-        - Categories
-      summary: Удалить категорию
-      operationId: deleteCategory
+        - warehouse-controller
+      summary: Удаление склада и его связей с товарами
+      operationId: deleteWarehouse
       parameters:
         - name: id
           in: path
@@ -206,302 +231,60 @@ paths:
             format: uuid
       responses:
         '204':
-          description: No content
-        '404':
-          description: Not found
+          description: Склад успешно удален
 
-  /api/products:
+  /api/v1/deliveries:
     post:
       tags:
-        - Products
-      summary: Создать товар
-      operationId: createProduct
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProductResponse'
-    get:
-      tags:
-        - Products
-      summary: Получить все товары
-      operationId: getAllProducts
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProductResponse'
-
-  /api/products/{id}:
-    get:
-      tags:
-        - Products
-      summary: Получить товар по id
-      operationId: getProductById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProductResponse'
-        '404':
-          description: Not found
-
-    put:
-      tags:
-        - Products
-      summary: Обновить товар
-      operationId: updateProduct
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProductResponse'
-        '404':
-          description: Not found
-
-    delete:
-      tags:
-        - Products
-      summary: Удалить товар
-      operationId: deleteProduct
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: No content
-        '404':
-          description: Not found
-
-  /api/carts:
-    post:
-      tags:
-        - Carts
-      summary: Создать корзину
-      operationId: createCart
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CartRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CartResponse'
-    get:
-      tags:
-        - Carts
-      summary: Получить все корзины
-      operationId: getAllCarts
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CartResponse'
-
-  /api/carts/{id}:
-    get:
-      tags:
-        - Carts
-      summary: Получить корзину по id
-      operationId: getCartById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CartResponse'
-        '404':
-          description: Not found
-
-    delete:
-      tags:
-        - Carts
-      summary: Удалить корзину
-      operationId: deleteCart
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: No content
-        '404':
-          description: Not found
-
-  /api/orders:
-    post:
-      tags:
-        - Orders
-      summary: Создать заказ
-      operationId: createOrder
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrderRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrderResponse'
-    get:
-      tags:
-        - Orders
-      summary: Получить все заказы
-      operationId: getAllOrders
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OrderResponse'
-
-  /api/orders/{id}:
-    get:
-      tags:
-        - Orders
-      summary: Получить заказ по id
-      operationId: getOrderById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrderResponse'
-        '404':
-          description: Not found
-
-    delete:
-      tags:
-        - Orders
-      summary: Удалить заказ
-      operationId: deleteOrder
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: No content
-        '404':
-          description: Not found
-
-  /api/deliveries:
-    post:
-      tags:
-        - Deliveries
-      summary: Создать доставку
+        - delivery-controller
+      summary: Создать доставку вместе с деталями
       operationId: createDelivery
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeliveryRequest'
+              $ref: '#/components/schemas/DeliveryCreateDto'
       responses:
         '201':
-          description: Created
+          description: Доставка успешно создана
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryResponse'
+                $ref: '#/components/schemas/DeliveryResponseDto'
     get:
       tags:
-        - Deliveries
-      summary: Получить все доставки
+        - delivery-controller
+      summary: Получить список доставок
       operationId: getAllDeliveries
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
-          description: OK
+          description: Список получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DeliveryResponse'
+                  $ref: '#/components/schemas/DeliveryResponseDto'
 
-  /api/deliveries/{id}:
+  /api/v1/deliveries/{id}:
     get:
       tags:
-        - Deliveries
-      summary: Получить доставку по id
+        - delivery-controller
+      summary: Получить доставку по ID
       operationId: getDeliveryById
       parameters:
         - name: id
@@ -512,18 +295,15 @@ paths:
             format: uuid
       responses:
         '200':
-          description: OK
+          description: Доставка найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryResponse'
-        '404':
-          description: Not found
-
+                $ref: '#/components/schemas/DeliveryResponseDto'
     put:
       tags:
-        - Deliveries
-      summary: Обновить доставку
+        - delivery-controller
+      summary: Обновить доставку и детали
       operationId: updateDelivery
       parameters:
         - name: id
@@ -537,21 +317,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeliveryRequest'
+              $ref: '#/components/schemas/DeliveryUpdateDto'
       responses:
         '200':
-          description: OK
+          description: Доставка обновлена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeliveryResponse'
-        '404':
-          description: Not found
-
+                $ref: '#/components/schemas/DeliveryResponseDto'
     delete:
       tags:
-        - Deliveries
-      summary: Удалить доставку
+        - delivery-controller
+      summary: Удаление доставки и деталей
       operationId: deleteDelivery
       parameters:
         - name: id
@@ -562,117 +339,208 @@ paths:
             format: uuid
       responses:
         '204':
-          description: No content
-        '404':
-          description: Not found
+          description: Успешно удалено
 
 components:
   schemas:
-    UserRequest:
+    UserCreateDto:
       type: object
+      required:
+        - username
       properties:
         username:
           type: string
-
-    UserResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        username:
-          type: string
-
-    CategoryRequest:
-      type: object
-      properties:
-        name:
-          type: string
-
-    CategoryResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-
-    ProductRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        price:
-          type: number
-        categoryId:
-          type: string
-          format: uuid
-
-    ProductResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        price:
-          type: number
-        category:
-          $ref: '#/components/schemas/CategoryResponse'
-
-    CartRequest:
-      type: object
-      properties:
-        productIds:
+        orders:
           type: array
           items:
-            type: string
-            format: uuid
+            $ref: '#/components/schemas/OrderCreateDto'
 
-    CartResponse:
+    OrderCreateDto:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+
+    UserUpdateDto:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderUpdateDto'
+
+    OrderUpdateDto:
       type: object
       properties:
         id:
           type: string
           format: uuid
+          description: Если ID передан — обновляем существующий заказ, если нет — создаем новый внутри пользователя
+        description:
+          type: string
+
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponseDto'
+
+    OrderResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string
+
+    WarehouseCreateDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
         products:
           type: array
           items:
-            $ref: '#/components/schemas/ProductResponse'
+            $ref: '#/components/schemas/ProductCreateDto'
 
-    OrderRequest:
+    ProductCreateDto:
       type: object
+      required:
+        - title
+        - price
       properties:
-        userId:
+        title:
           type: string
-          format: uuid
-        delivery:
-          $ref: '#/components/schemas/DeliveryRequest'
+        price:
+          type: number
 
-    OrderResponse:
+    WarehouseUpdateDto:
       type: object
+      required:
+        - name
       properties:
-        id:
+        name:
           type: string
-          format: uuid
-        user:
-          $ref: '#/components/schemas/UserResponse'
-        delivery:
-          $ref: '#/components/schemas/DeliveryResponse'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductUpdateDto'
 
-    DeliveryRequest:
-      type: object
-      properties:
-        address:
-          type: string
-
-    DeliveryResponse:
+    ProductUpdateDto:
       type: object
       properties:
         id:
           type: string
           format: uuid
+        title:
+          type: string
+        price:
+          type: number
+
+    WarehouseResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponseDto'
+
+    ProductResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        price:
+          type: number
+
+    DeliveryCreateDto:
+      type: object
+      required:
+        - address
+        - status
+      properties:
         address:
+          type: string
+        status:
+          type: string
+        details:
+          $ref: '#/components/schemas/DeliveryDetailsCreateDto'
+
+    DeliveryDetailsCreateDto:
+      type: object
+      required:
+        - courierName
+      properties:
+        courierName:
+          type: string
+        deliveryNotes:
+          type: string
+
+    DeliveryUpdateDto:
+      type: object
+      required:
+        - address
+        - status
+      properties:
+        address:
+          type: string
+        status:
+          type: string
+        details:
+          $ref: '#/components/schemas/DeliveryDetailsUpdateDto'
+
+    DeliveryDetailsUpdateDto:
+      type: object
+      properties:
+        courierName:
+          type: string
+        deliveryNotes:
+          type: string
+
+    DeliveryResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        address:
+          type: string
+        status:
+          type: string
+        details:
+          $ref: '#/components/schemas/DeliveryDetailsResponseDto'
+
+    DeliveryDetailsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        courierName:
+          type: string
+        deliveryNotes:
           type: string
