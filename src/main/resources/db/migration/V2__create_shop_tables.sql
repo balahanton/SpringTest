@@ -1,34 +1,65 @@
-CREATE TABLE IF NOT EXISTS categories(
-    id uuid PRIMARY KEY DEFAULT spring_test.uuid_generate_v4(),
-    name text NOT NULL
-);
+ALTER TABLE users
+    ADD COLUMN created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE users
+    ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE users
+    ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS products(
     id uuid PRIMARY KEY DEFAULT spring_test.uuid_generate_v4(),
-    name text NOT NULL,
+    title text NOT NULL,
     price numeric(10, 2) NOT NULL CHECK (price >= 0),
-    category_id uuid REFERENCES categories (id) ON DELETE CASCADE
+    created_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted boolean NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS carts(
+CREATE TABLE IF NOT EXISTS warehouses(
     id uuid PRIMARY KEY DEFAULT spring_test.uuid_generate_v4(),
-    created_at timestamp DEFAULT now()
+    name text NOT NULL,
+    created_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted boolean NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS products_carts(
-    product_id uuid REFERENCES products (id) ON DELETE CASCADE,
-    cart_id uuid references carts (id) ON DELETE CASCADE,
-    PRIMARY KEY (product_id, cart_id)
+CREATE TABLE IF NOT EXISTS warehouses_products(
+    warehouse_id uuid NOT NULL,
+    product_id   uuid NOT NULL,
+
+    PRIMARY KEY (warehouse_id, product_id),
+    CONSTRAINT fk_wp_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses (id) ON DELETE CASCADE,
+    CONSTRAINT fk_wp_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS orders(
     id uuid PRIMARY KEY DEFAULT spring_test.uuid_generate_v4(),
-    created_at timestamp DEFAULT now(),
-    user_id uuid REFERENCES users (id) ON DELETE CASCADE
+    description text,
+    user_id uuid NOT NULL,
+    created_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted boolean NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES spring_test.users (id)
 );
 
 CREATE TABLE IF NOT EXISTS deliveries(
     id uuid PRIMARY KEY DEFAULT spring_test.uuid_generate_v4(),
     address text NOT NULL,
-    order_id uuid UNIQUE REFERENCES orders (id) ON DELETE CASCADE
+    status text NOT NULL,
+    created_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted boolean NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS delivery_details
+(
+    id uuid PRIMARY KEY DEFAULT spring_test.uuid_generate_v4(),
+    delivery_id uuid NOT NULL UNIQUE,
+    courier_name text NOT NULL,
+    delivery_notes text,
+    created_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted boolean NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT fk_details_delivery FOREIGN KEY (delivery_id) REFERENCES spring_test.deliveries (id)
 );

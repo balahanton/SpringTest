@@ -1,10 +1,14 @@
 package ru.anton.springtest.model;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,22 +16,20 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "products", schema = "spring_test")
-public class Product {
+@SQLDelete(sql = "UPDATE spring_test.products SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    private String title;
 
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @ManyToMany(mappedBy = "products")
-    private List<Cart> carts;
+    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    private List<Warehouse> warehouses = new ArrayList<>();
 }

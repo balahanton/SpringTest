@@ -1,11 +1,24 @@
 package ru.anton.springtest.repository;
 
+import jakarta.annotation.Nonnull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import ru.anton.springtest.model.Delivery;
 
+import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
+
+    @Override
+    @Nonnull
+    @EntityGraph(attributePaths = {"details"})
+    Page<Delivery> findAll(@Nonnull Pageable pageable);
+
+    @Override
+    @Nonnull
+    @EntityGraph(attributePaths = {"details"})
+    Optional<Delivery> findById(@Nonnull UUID id);
 }
