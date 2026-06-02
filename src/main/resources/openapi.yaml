@@ -2,6 +2,187 @@ openapi: 3.0.3
 info:
   title: Shop API
   version: 1.0.0
-paths: {}
+
+tags:
+  - name: user-controller
+    description: Управление пользователями и их заказами
+
+paths:
+  /api/v1/users:
+    post:
+      tags:
+        - user-controller
+      summary: Создать пользователя вместе с его заказами
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDto'
+      responses:
+        '201':
+          description: Пользователь и заказы успешно созданы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+
+    get:
+      tags:
+        - user-controller
+      summary: Получить список пользователей с вложенными заказами
+      operationId: getAllUsers
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: Номер страницы
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          description: Количество пользователей
+      responses:
+        '200':
+          description: Список успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseDto'
+
+  /api/v1/users/{id}:
+    get:
+      tags:
+        - user-controller
+      summary: Получить пользователя по ID с его заказами
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Пользователь найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+
+    put:
+      tags:
+        - user-controller
+      summary: Обновить данные пользователя и его заказов
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDto'
+      responses:
+        '200':
+          description: Данные успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+
+    delete:
+      tags:
+        - user-controller
+      summary: Удаленить пользователя и его заказы
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Пользователь и его заказы успешно удалены
+
 components:
-  schemas: {}
+  schemas:
+    UserCreateDto:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderCreateDto'
+
+    OrderCreateDto:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+
+    UserUpdateDto:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderUpdateDto'
+
+    OrderUpdateDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Если ID передан — обновляем существующий заказ, если нет — создаем новый внутри пользователя
+        description:
+          type: string
+
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponseDto'
+
+    OrderResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string

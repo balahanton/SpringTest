@@ -53,7 +53,8 @@ openApiGenerate {
             useSpringBoot3: "true",
             useResponseEntity: "false",
             useTags: "true",
-            skipDefaultInterface: "true"
+            skipDefaultInterface: "true",
+            openApiNullable: "false"
     ]
 }
 
