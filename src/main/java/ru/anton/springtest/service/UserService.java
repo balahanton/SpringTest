@@ -27,6 +27,7 @@ public class UserService {
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
+        log.info("Начало метода создания пользователя: {}", dto.getUsername());
 
         User user = userMapper.toEntity(dto);
         User savedUser = userRepository.save(user);
@@ -37,15 +38,20 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDto getUserById(UUID id) {
+        log.info("Запрос на получение пользователя по ID: {}", id);
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Пользователь с ID {} не найден в базе данных", id);
+                    return new EntityNotFoundException("Пользователь с ID " + id + " не найден");
+                });
 
         return userMapper.toResponseDto(user);
     }
 
     @Transactional(readOnly = true)
     public List<UserResponseDto> getAllUsers(Pageable pageable) {
+        log.info("Запрос списка пользователей. Страница: {}, Размер: {}", pageable.getPageNumber(), pageable.getPageSize());
 
         Page<User> userPage = userRepository.findAll(pageable);
 
@@ -54,13 +60,18 @@ public class UserService {
 
     @Transactional
     public UserResponseDto updateUser(UUID id, UserUpdateDto dto) {
+        log.info("Начало обновления пользователя с ID: {}. Новое имя: {}", id, dto.getUsername());
 
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found for update"));
+                .orElseThrow(() -> {
+                    log.error("Пользователь с ID {} не найден для обновления", id);
+                    return new EntityNotFoundException("Пользователь с ID " + id + " не найден");
+                });
 
         existingUser.setUsername(dto.getUsername());
 
         if (dto.getOrders() == null || dto.getOrders().isEmpty()) {
+            log.info("Список заказов пуст. Очистка заказов для пользователя ID: {}", id);
             existingUser.getOrders().clear();
         } else {
             existingUser.getOrders().removeIf(existingOrder ->
@@ -79,9 +90,13 @@ public class UserService {
 
     @Transactional
     public void deleteUser(UUID id) {
+        log.info("Запрос на удаление пользователя с ID: {}", id);
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found for deletion"));
+                .orElseThrow(() -> {
+                    log.error("Пользователь с ID {} не найден для удаления", id);
+                    return new EntityNotFoundException("Пользователь с ID " + id + " не найден");
+                });
 
         userRepository.delete(user);
 
