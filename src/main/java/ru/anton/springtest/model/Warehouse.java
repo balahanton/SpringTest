@@ -3,7 +3,6 @@ package ru.anton.springtest.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "warehouses", schema = "spring_test")
-@SQLDelete(sql = "UPDATE spring_test.warehouses SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 public class Warehouse extends BaseEntity {
 

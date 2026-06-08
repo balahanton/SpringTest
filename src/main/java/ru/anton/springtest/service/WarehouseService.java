@@ -14,7 +14,6 @@ import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.WarehouseMapper;
 import ru.anton.springtest.model.Product;
 import ru.anton.springtest.model.Warehouse;
-import ru.anton.springtest.repository.ProductRepository;
 import ru.anton.springtest.repository.WarehouseRepository;
 
 import java.util.List;
@@ -26,12 +25,11 @@ import java.util.UUID;
 public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
     private final WarehouseMapper warehouseMapper;
 
     @Transactional
     public WarehouseResponseDto createWarehouse(WarehouseCreateDto dto) {
-        log.info("Начало метода создания склада: {}", dto.getName());
 
         Warehouse warehouse = warehouseMapper.toEntity(dto);
         Warehouse savedWarehouse = warehouseRepository.save(warehouse);
@@ -42,40 +40,26 @@ public class WarehouseService {
 
     @Transactional(readOnly = true)
     public WarehouseResponseDto getWarehouseById(UUID id) {
-        log.info("Запрос склада по ID: {}", id);
 
-        Warehouse warehouse = warehouseRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Склад с ID {} не найден", id);
-                    return new EntityNotFoundException("Склад с ID " + id + " не найден");
-                });
+        Warehouse warehouse = findWarehouseOrThrow(id);
 
         return warehouseMapper.toResponseDto(warehouse);
     }
 
     @Transactional(readOnly = true)
     public List<WarehouseResponseDto> getAllWarehouses(Pageable pageable) {
-        log.info("Запрос списка складов. Страница: {}, Размер: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<Warehouse> warehousePage = warehouseRepository.findAll(pageable);
+        Page<Warehouse> warehousePage = warehouseRepository.findWithLockByIsDeletedFalse(pageable);
         return warehouseMapper.toResponseDtoList(warehousePage.getContent());
     }
 
 
     @Transactional
     public WarehouseResponseDto updateWarehouse(UUID id, WarehouseUpdateDto dto) {
-        log.info("Начало метода обновления склада с ID: {}. Новое имя: {}", id, dto.getName());
 
-        Warehouse warehouse = warehouseRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Склад с ID {} не найден для обновления", id);
-                    return new EntityNotFoundException("Склад с ID " + id + " не найден");
-                });
-
-        warehouse.setName(dto.getName());
+        Warehouse warehouse = findWarehouseOrThrow(id);
 
         if (dto.getProducts() == null || dto.getProducts().isEmpty()) {
-            log.info("Список товаров пуст. Очистка связей для склада ID: {}", id);
             warehouse.getProducts().clear();
         } else {
             warehouse.getProducts().removeIf(existingProduct ->
@@ -86,38 +70,42 @@ public class WarehouseService {
 
             for (ProductUpdateDto pDto : dto.getProducts()) {
                 if (pDto.getId() != null) {
-                    Product existingProduct = productRepository.findById(pDto.getId())
-                            .orElseThrow(() -> new EntityNotFoundException("Продукт не найден"));
-                    existingProduct.setTitle(pDto.getTitle());
-                    existingProduct.setPrice(pDto.getPrice());
+                    Product existingProduct = productService.findByIdOrThrow(pDto.getId());
 
                     if (!warehouse.getProducts().contains(existingProduct)) {
                         warehouse.getProducts().add(existingProduct);
                     }
                 } else {
                     Product newProduct = new Product();
-                    newProduct.setTitle(pDto.getTitle());
-                    newProduct.setPrice(pDto.getPrice());
-
                     warehouse.getProducts().add(newProduct);
                 }
             }
         }
 
+        warehouseMapper.updateEntity(dto, warehouse);
+
         Warehouse updatedWarehouse = warehouseRepository.save(warehouse);
-        log.info("Склад с ID {} успешно обновлен", id);
+        log.info("Успешно обновлен склад с ID: {}", id);
         return warehouseMapper.toResponseDto(updatedWarehouse);
     }
 
     @Transactional
     public void deleteWarehouse(UUID id) {
-        log.info("Запрос на удаление склада с ID: {}", id);
 
-        Warehouse warehouse = warehouseRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Склад с ID " + id + " не найден"));
+        Warehouse warehouse = findWarehouseOrThrow(id);
 
-        warehouseRepository.delete(warehouse);
+        warehouse.setIsDeleted(true);
 
+        warehouseRepository.save(warehouse);
         log.info("Склад с ID {} и его связи с товарами переведены в статус удаленных", id);
+    }
+
+    private Warehouse findWarehouseOrThrow(UUID id) {
+        return warehouseRepository.findById(id)
+                .filter(warehouse -> !warehouse.getIsDeleted())
+                .orElseThrow(() -> {
+                    log.error("Склад с ID {} не найден или был удален", id);
+                    return new EntityNotFoundException("Warehouse with ID " + id + " not found");
+                });
     }
 }

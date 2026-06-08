@@ -15,12 +15,33 @@ import java.util.List;
 )
 public interface UserMapper {
 
+    @Mappings({
+            @Mapping(target = "id", source = "id"),
+            @Mapping(target = "username", source = "username"),
+            @Mapping(target = "orders", source = "orders")
+    })
     UserResponseDto toResponseDto(User user);
 
     List<UserResponseDto> toResponseDtoList(List<User> users);
 
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "username", source = "username"),
+            @Mapping(target = "orders", source = "orders"),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "isDeleted", ignore = true)
+    })
     User toEntity(UserCreateDto dto);
 
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "username", source = "username"),
+            @Mapping(target = "orders", source = "orders"),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "isDeleted", ignore = true)
+    })
     void updateEntity(UserUpdateDto dto, @MappingTarget User user);
 
     @AfterMapping

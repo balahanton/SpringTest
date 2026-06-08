@@ -1,10 +1,12 @@
 package ru.anton.springtest.repository;
 
 import jakarta.annotation.Nonnull;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import ru.anton.springtest.model.Delivery;
 
 import java.util.Optional;
@@ -21,4 +23,8 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
     @Nonnull
     @EntityGraph(attributePaths = {"details"})
     Optional<Delivery> findById(@Nonnull UUID id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @EntityGraph(attributePaths = {"details"})
+    Page<Delivery> findWithLockByIsDeletedFalse(Pageable pageable);
 }

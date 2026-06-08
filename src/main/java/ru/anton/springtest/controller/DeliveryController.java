@@ -2,6 +2,7 @@ package ru.anton.springtest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import ru.anton.springtest.api.DeliveryControllerApi;
 import ru.anton.springtest.dto.DeliveryCreateDto;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 public class DeliveryController implements DeliveryControllerApi {
 
@@ -30,11 +32,7 @@ public class DeliveryController implements DeliveryControllerApi {
 
     @Override
     public List<DeliveryResponseDto> getAllDeliveries(Integer page, Integer size) {
-
-        int pageNumber = (page != null) ? page : 0;
-        int pageSize = (size != null) ? size : 10;
-
-        return deliveryService.getAllDeliveries(PageRequest.of(pageNumber, pageSize));
+        return deliveryService.getAllDeliveries(PageRequest.of(page, size));
     }
 
     @Override

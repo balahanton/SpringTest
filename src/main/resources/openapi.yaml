@@ -43,6 +43,7 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
             default: 0
           description: Номер страницы
         - name: size
@@ -50,6 +51,8 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             default: 10
           description: Количество пользователей
       responses:
@@ -155,12 +158,15 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
             default: 0
         - name: size
           in: query
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             default: 10
       responses:
         '200':
@@ -263,12 +269,15 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
             default: 0
         - name: size
           in: query
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             default: 10
       responses:
         '200':
@@ -350,6 +359,8 @@ components:
       properties:
         username:
           type: string
+          minLength: 2
+          maxLength: 50
         orders:
           type: array
           items:
@@ -362,6 +373,8 @@ components:
       properties:
         description:
           type: string
+          minLength: 5
+          maxLength: 255
 
     UserUpdateDto:
       type: object
@@ -370,6 +383,8 @@ components:
       properties:
         username:
           type: string
+          minLength: 2
+          maxLength: 50
         orders:
           type: array
           items:
@@ -384,6 +399,8 @@ components:
           description: Если ID передан — обновляем существующий заказ, если нет — создаем новый внутри пользователя
         description:
           type: string
+          minLength: 5
+          maxLength: 255
 
     UserResponseDto:
       type: object
@@ -414,6 +431,8 @@ components:
       properties:
         name:
           type: string
+          minLength: 5
+          maxLength: 255
         products:
           type: array
           items:
@@ -427,8 +446,11 @@ components:
       properties:
         title:
           type: string
+          minLength: 5
+          maxLength: 255
         price:
           type: number
+          minimum: 1
 
     WarehouseUpdateDto:
       type: object
@@ -437,6 +459,8 @@ components:
       properties:
         name:
           type: string
+          minLength: 5
+          maxLength: 255
         products:
           type: array
           items:
@@ -450,8 +474,11 @@ components:
           format: uuid
         title:
           type: string
+          minLength: 5
+          maxLength: 255
         price:
           type: number
+          minimum: 1
 
     WarehouseResponseDto:
       type: object
@@ -485,6 +512,8 @@ components:
       properties:
         address:
           type: string
+          minLength: 5
+          maxLength: 255
         status:
           type: string
         details:
@@ -497,8 +526,12 @@ components:
       properties:
         courierName:
           type: string
+          minLength: 2
+          maxLength: 50
         deliveryNotes:
           type: string
+          minLength: 5
+          maxLength: 255
 
     DeliveryUpdateDto:
       type: object
@@ -508,6 +541,8 @@ components:
       properties:
         address:
           type: string
+          minLength: 5
+          maxLength: 255
         status:
           type: string
         details:
@@ -518,8 +553,12 @@ components:
       properties:
         courierName:
           type: string
+          minLength: 2
+          maxLength: 50
         deliveryNotes:
           type: string
+          minLength: 5
+          maxLength: 255
 
     DeliveryResponseDto:
       type: object

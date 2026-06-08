@@ -21,12 +21,13 @@ import jakarta.annotation.Generated;
  * UserCreateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-02T18:02:56.808734+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class UserCreateDto {
 
+  @NotNull @Size(min = 2, max = 50) 
   private String username;
 
-  @Valid
+  @Valid 
   private List<@Valid OrderCreateDto> orders;
 
   public UserCreateDto() {
@@ -49,7 +50,6 @@ public class UserCreateDto {
    * Get username
    * @return username
   */
-  @NotNull 
   @Schema(name = "username", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("username")
   public String getUsername() {
@@ -77,7 +77,6 @@ public class UserCreateDto {
    * Get orders
    * @return orders
   */
-  @Valid 
   @Schema(name = "orders", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("orders")
   public List<@Valid OrderCreateDto> getOrders() {
@@ -127,4 +126,3 @@ public class UserCreateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
@@ -16,7 +15,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "products", schema = "spring_test")
-@SQLDelete(sql = "UPDATE spring_test.products SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class Product extends BaseEntity {

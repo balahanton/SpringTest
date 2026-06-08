@@ -17,16 +17,15 @@ public abstract class BaseEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private Boolean isDeleted = false;
 
     @PrePersist
     public void onCreate() {
         this.createdAt = OffsetDateTime.now();
-        this.updatedAt = this.createdAt;
     }
 
     @PreUpdate

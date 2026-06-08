@@ -12,7 +12,6 @@ import ru.anton.springtest.dto.DeliveryUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.DeliveryMapper;
 import ru.anton.springtest.model.Delivery;
-import ru.anton.springtest.model.DeliveryDetails;
 import ru.anton.springtest.repository.DeliveryRepository;
 
 import java.util.List;
@@ -28,7 +27,6 @@ public class DeliveryService {
 
     @Transactional
     public DeliveryResponseDto createDelivery(DeliveryCreateDto dto) {
-        log.info("Начало метода создания доставки по адресу: {}", dto.getAddress());
 
         Delivery delivery = deliveryMapper.toEntity(dto);
         Delivery savedDelivery = deliveryRepository.save(delivery);
@@ -39,70 +37,51 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public DeliveryResponseDto getDeliveryById(UUID id) {
-        log.info("Запрос информации о доставке по ID: {}", id);
 
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Доставка с ID {} не найдена", id);
-                    return new EntityNotFoundException("Доставка с ID " + id + " не найдена");
-                });
+        Delivery delivery = findDeliveryOrThrow(id);
 
         return deliveryMapper.toResponseDto(delivery);
     }
 
     @Transactional(readOnly = true)
     public List<DeliveryResponseDto> getAllDeliveries(Pageable pageable) {
-        log.info("Запрос списка доставок. Страница: {}, Размер: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<Delivery> deliveryPage = deliveryRepository.findAll(pageable);
+        Page<Delivery> deliveryPage = deliveryRepository.findWithLockByIsDeletedFalse(pageable);
         return deliveryMapper.toResponseDtoList(deliveryPage.getContent());
     }
 
     @Transactional
     public DeliveryResponseDto updateDelivery(UUID id, DeliveryUpdateDto dto) {
-        log.info("Начало процесса обновления доставки с ID: {}. Статус: {}", id, dto.getStatus());
 
-        Delivery existingDelivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Доставка с ID {} не найдена для обновления", id);
-                    return new EntityNotFoundException("Доставка с ID " + id + " не найдена");
-                });
+        Delivery existingDelivery = findDeliveryOrThrow(id);
 
-        existingDelivery.setAddress(dto.getAddress());
-        existingDelivery.setStatus(dto.getStatus());
-
-        if (dto.getDetails() == null) {
-            log.info("Детали доставки отсутствуют в запросе. Удаление деталей для доставки ID: {}", id);
-            existingDelivery.setDetails(null);
-        } else {
-            DeliveryDetails existingDetails = existingDelivery.getDetails();
-            if (existingDetails == null) {
-                log.info("Создание новых деталей для существующей доставки ID: {}", id);
-                existingDetails = new DeliveryDetails();
-                existingDetails.setDelivery(existingDelivery);
-                existingDelivery.setDetails(existingDetails);
-            }
-            existingDetails.setCourierName(dto.getDetails().getCourierName());
-            existingDetails.setDeliveryNotes(dto.getDetails().getDeliveryNotes());
-        }
+        deliveryMapper.updateEntity(dto, existingDelivery);
 
         Delivery updatedDelivery = deliveryRepository.save(existingDelivery);
-        log.info("Доставка с ID {} успешно обновлена", id);
+        log.info("Успешно обновлена доставка с ID: {}", id);
         return deliveryMapper.toResponseDto(updatedDelivery);
     }
 
     @Transactional
     public void deleteDelivery(UUID id) {
-        log.info("Запрос на удаление доставки с ID: {}", id);
 
-        Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Доставка с ID {} не найдена для удаления", id);
-                    return new EntityNotFoundException("Доставка с ID " + id + " не найдена");
-                });
+        Delivery delivery = findDeliveryOrThrow(id);
 
-        deliveryRepository.delete(delivery);
+        delivery.setIsDeleted(true);
+        if (delivery.getDetails() != null) {
+            delivery.getDetails().setIsDeleted(true);
+        }
 
+        deliveryRepository.save(delivery);
         log.info("Доставка с ID {} и её детали успешно удалены", id);
+    }
+
+    private Delivery findDeliveryOrThrow(UUID id) {
+        return deliveryRepository.findById(id)
+                .filter(delivery -> !delivery.getIsDeleted())
+                .orElseThrow(() -> {
+                    log.error("Доставка с ID {} не найдена или была удалена", id);
+                    return new EntityNotFoundException("Delivery with ID " + id + " not found");
+                });
     }
 }

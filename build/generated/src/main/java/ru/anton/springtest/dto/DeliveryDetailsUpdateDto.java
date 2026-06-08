@@ -17,11 +17,13 @@ import jakarta.annotation.Generated;
  * DeliveryDetailsUpdateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-02T18:02:56.808734+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class DeliveryDetailsUpdateDto {
 
+  @Size(min = 2, max = 50) 
   private String courierName;
 
+  @Size(min = 5, max = 255) 
   private String deliveryNotes;
 
   public DeliveryDetailsUpdateDto courierName(String courierName) {
@@ -33,7 +35,6 @@ public class DeliveryDetailsUpdateDto {
    * Get courierName
    * @return courierName
   */
-  
   @Schema(name = "courierName", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("courierName")
   public String getCourierName() {
@@ -53,7 +54,6 @@ public class DeliveryDetailsUpdateDto {
    * Get deliveryNotes
    * @return deliveryNotes
   */
-  
   @Schema(name = "deliveryNotes", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("deliveryNotes")
   public String getDeliveryNotes() {
@@ -103,4 +103,3 @@ public class DeliveryDetailsUpdateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

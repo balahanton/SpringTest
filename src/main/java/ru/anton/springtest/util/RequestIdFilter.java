@@ -1,4 +1,4 @@
-package ru.anton.springtest.infrastructure;
+package ru.anton.springtest.util;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

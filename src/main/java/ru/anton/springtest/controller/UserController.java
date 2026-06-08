@@ -2,6 +2,7 @@ package ru.anton.springtest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import ru.anton.springtest.api.UserControllerApi;
 import ru.anton.springtest.dto.UserCreateDto;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 public class UserController implements UserControllerApi {
 
@@ -25,10 +27,7 @@ public class UserController implements UserControllerApi {
 
     @Override
     public List<UserResponseDto> getAllUsers(Integer page, Integer size) {
-        int pageNumber = (page != null) ? page : 0;
-        int pageSize = (size != null) ? size : 10;
-
-        return userService.getAllUsers(PageRequest.of(pageNumber, pageSize));
+        return userService.getAllUsers(PageRequest.of(page, size));
     }
 
     @Override

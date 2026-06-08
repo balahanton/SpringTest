@@ -18,13 +18,16 @@ import jakarta.annotation.Generated;
  * DeliveryCreateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-02T18:02:56.808734+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class DeliveryCreateDto {
 
+  @NotNull @Size(min = 5, max = 255) 
   private String address;
 
+  @NotNull 
   private String status;
 
+  @Valid 
   private DeliveryDetailsCreateDto details;
 
   public DeliveryCreateDto() {
@@ -48,7 +51,6 @@ public class DeliveryCreateDto {
    * Get address
    * @return address
   */
-  @NotNull 
   @Schema(name = "address", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("address")
   public String getAddress() {
@@ -68,7 +70,6 @@ public class DeliveryCreateDto {
    * Get status
    * @return status
   */
-  @NotNull 
   @Schema(name = "status", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("status")
   public String getStatus() {
@@ -88,7 +89,6 @@ public class DeliveryCreateDto {
    * Get details
    * @return details
   */
-  @Valid 
   @Schema(name = "details", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("details")
   public DeliveryDetailsCreateDto getDetails() {
@@ -140,4 +140,3 @@ public class DeliveryCreateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

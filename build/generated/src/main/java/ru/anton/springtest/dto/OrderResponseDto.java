@@ -18,11 +18,13 @@ import jakarta.annotation.Generated;
  * OrderResponseDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-02T18:02:56.808734+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class OrderResponseDto {
 
+  @Valid 
   private UUID id;
 
+  
   private String description;
 
   public OrderResponseDto id(UUID id) {
@@ -34,7 +36,6 @@ public class OrderResponseDto {
    * Get id
    * @return id
   */
-  @Valid 
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public UUID getId() {
@@ -54,7 +55,6 @@ public class OrderResponseDto {
    * Get description
    * @return description
   */
-  
   @Schema(name = "description", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("description")
   public String getDescription() {
@@ -104,4 +104,3 @@ public class OrderResponseDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
-

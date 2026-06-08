@@ -18,11 +18,13 @@ import jakarta.annotation.Generated;
  * ProductCreateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-02T18:02:56.808734+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class ProductCreateDto {
 
+  @NotNull @Size(min = 5, max = 255) 
   private String title;
 
+  @NotNull @Valid @DecimalMin("1") 
   private BigDecimal price;
 
   public ProductCreateDto() {
@@ -46,7 +48,6 @@ public class ProductCreateDto {
    * Get title
    * @return title
   */
-  @NotNull 
   @Schema(name = "title", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("title")
   public String getTitle() {
@@ -64,9 +65,9 @@ public class ProductCreateDto {
 
   /**
    * Get price
+   * minimum: 1
    * @return price
   */
-  @NotNull @Valid 
   @Schema(name = "price", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("price")
   public BigDecimal getPrice() {
@@ -116,4 +117,3 @@ public class ProductCreateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
-
