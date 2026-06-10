@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.UUID;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -17,14 +18,34 @@ import jakarta.annotation.Generated;
  * DeliveryDetailsUpdateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class DeliveryDetailsUpdateDto {
 
-  @Size(min = 2, max = 50) 
+  private UUID id;
+
   private String courierName;
 
-  @Size(min = 5, max = 255) 
   private String deliveryNotes;
+
+  public DeliveryDetailsUpdateDto id(UUID id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+  */
+  @Valid 
+  @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("id")
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
   public DeliveryDetailsUpdateDto courierName(String courierName) {
     this.courierName = courierName;
@@ -35,6 +56,7 @@ public class DeliveryDetailsUpdateDto {
    * Get courierName
    * @return courierName
   */
+  @Size(min = 2, max = 50) 
   @Schema(name = "courierName", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("courierName")
   public String getCourierName() {
@@ -54,6 +76,7 @@ public class DeliveryDetailsUpdateDto {
    * Get deliveryNotes
    * @return deliveryNotes
   */
+  @Size(min = 5, max = 255) 
   @Schema(name = "deliveryNotes", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("deliveryNotes")
   public String getDeliveryNotes() {
@@ -73,19 +96,21 @@ public class DeliveryDetailsUpdateDto {
       return false;
     }
     DeliveryDetailsUpdateDto deliveryDetailsUpdateDto = (DeliveryDetailsUpdateDto) o;
-    return Objects.equals(this.courierName, deliveryDetailsUpdateDto.courierName) &&
+    return Objects.equals(this.id, deliveryDetailsUpdateDto.id) &&
+        Objects.equals(this.courierName, deliveryDetailsUpdateDto.courierName) &&
         Objects.equals(this.deliveryNotes, deliveryDetailsUpdateDto.deliveryNotes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(courierName, deliveryNotes);
+    return Objects.hash(id, courierName, deliveryNotes);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class DeliveryDetailsUpdateDto {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    courierName: ").append(toIndentedString(courierName)).append("\n");
     sb.append("    deliveryNotes: ").append(toIndentedString(deliveryNotes)).append("\n");
     sb.append("}");
@@ -103,3 +128,4 @@ public class DeliveryDetailsUpdateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

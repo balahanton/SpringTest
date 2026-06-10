@@ -1,13 +1,15 @@
 package ru.anton.springtest.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,10 +17,6 @@ import java.util.UUID;
 @Table(name = "users", schema = "spring_test")
 @SQLRestriction("is_deleted = false")
 public class User extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     private String username;
 

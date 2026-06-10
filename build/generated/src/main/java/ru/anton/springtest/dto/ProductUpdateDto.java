@@ -19,16 +19,13 @@ import jakarta.annotation.Generated;
  * ProductUpdateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class ProductUpdateDto {
 
-  @Valid 
   private UUID id;
 
-  @Size(min = 5, max = 255) 
   private String title;
 
-  @Valid @DecimalMin("1") 
   private BigDecimal price;
 
   public ProductUpdateDto id(UUID id) {
@@ -40,6 +37,7 @@ public class ProductUpdateDto {
    * Get id
    * @return id
   */
+  @Valid 
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public UUID getId() {
@@ -59,6 +57,7 @@ public class ProductUpdateDto {
    * Get title
    * @return title
   */
+  @Size(min = 5, max = 255) 
   @Schema(name = "title", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("title")
   public String getTitle() {
@@ -79,6 +78,7 @@ public class ProductUpdateDto {
    * minimum: 1
    * @return price
   */
+  @Valid @DecimalMin("1") 
   @Schema(name = "price", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("price")
   public BigDecimal getPrice() {
@@ -130,3 +130,4 @@ public class ProductUpdateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

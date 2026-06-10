@@ -19,16 +19,13 @@ import jakarta.annotation.Generated;
  * ProductResponseDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class ProductResponseDto {
 
-  @Valid 
   private UUID id;
 
-  
   private String title;
 
-  @Valid 
   private BigDecimal price;
 
   public ProductResponseDto id(UUID id) {
@@ -40,6 +37,7 @@ public class ProductResponseDto {
    * Get id
    * @return id
   */
+  @Valid 
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public UUID getId() {
@@ -59,6 +57,7 @@ public class ProductResponseDto {
    * Get title
    * @return title
   */
+  
   @Schema(name = "title", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("title")
   public String getTitle() {
@@ -78,6 +77,7 @@ public class ProductResponseDto {
    * Get price
    * @return price
   */
+  @Valid 
   @Schema(name = "price", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("price")
   public BigDecimal getPrice() {
@@ -129,3 +129,4 @@ public class ProductResponseDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

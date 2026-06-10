@@ -12,6 +12,8 @@ import ru.anton.springtest.dto.DeliveryUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.DeliveryMapper;
 import ru.anton.springtest.model.Delivery;
+import ru.anton.springtest.model.DeliveryDetails;
+import ru.anton.springtest.model.Product;
 import ru.anton.springtest.repository.DeliveryRepository;
 
 import java.util.List;
@@ -43,7 +45,7 @@ public class DeliveryService {
         return deliveryMapper.toResponseDto(delivery);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<DeliveryResponseDto> getAllDeliveries(Pageable pageable) {
 
         Page<Delivery> deliveryPage = deliveryRepository.findWithLockByIsDeletedFalse(pageable);
@@ -68,11 +70,12 @@ public class DeliveryService {
         Delivery delivery = findDeliveryOrThrow(id);
 
         delivery.setIsDeleted(true);
+
         if (delivery.getDetails() != null) {
             delivery.getDetails().setIsDeleted(true);
         }
 
-        deliveryRepository.save(delivery);
+
         log.info("Доставка с ID {} и её детали успешно удалены", id);
     }
 

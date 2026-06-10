@@ -17,7 +17,9 @@ public interface DeliveryMapper {
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "address", source = "address"),
             @Mapping(target = "status", source = "status"),
-            @Mapping(target = "details", source = "details")
+            @Mapping(target = "details.id", source = "details.id"),
+            @Mapping(target = "details.courierName", source = "details.courierName"),
+            @Mapping(target = "details.deliveryNotes", source = "details.deliveryNotes")
     })
     DeliveryResponseDto toResponseDto(Delivery delivery);
 
@@ -27,7 +29,13 @@ public interface DeliveryMapper {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "address", source = "address"),
             @Mapping(target = "status", source = "status"),
-            @Mapping(target = "details", source = "details"),
+            @Mapping(target = "details.id", ignore = true),
+            @Mapping(target = "details.courierName", source = "details.courierName"),
+            @Mapping(target = "details.deliveryNotes", source = "details.deliveryNotes"),
+            @Mapping(target = "details.delivery", ignore = true),
+            @Mapping(target = "details.createdAt", ignore = true),
+            @Mapping(target = "details.updatedAt", ignore = true),
+            @Mapping(target = "details.isDeleted", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
@@ -38,7 +46,13 @@ public interface DeliveryMapper {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "address", source = "address"),
             @Mapping(target = "status", source = "status"),
-            @Mapping(target = "details", source = "details"),
+            @Mapping(target = "details.id", ignore = true),
+            @Mapping(target = "details.courierName", source = "details.courierName"),
+            @Mapping(target = "details.deliveryNotes", source = "details.deliveryNotes"),
+            @Mapping(target = "details.delivery", ignore = true),
+            @Mapping(target = "details.createdAt", ignore = true),
+            @Mapping(target = "details.updatedAt", ignore = true),
+            @Mapping(target = "details.isDeleted", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)

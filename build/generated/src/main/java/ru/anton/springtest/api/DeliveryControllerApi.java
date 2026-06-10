@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "delivery-controller", description = "Управление доставками и их деталями")
 public interface DeliveryControllerApi {
@@ -116,8 +116,8 @@ public interface DeliveryControllerApi {
     /**
      * GET /api/v1/deliveries : Получить список доставок
      *
-     * @param page  (optional, default to 0)
-     * @param size  (optional, default to 10)
+     * @param page Номер страницы (optional, default to 0)
+     * @param size Количество элементов на странице (optional, default to 10)
      * @return Список получен (status code 200)
      */
     @Operation(
@@ -138,8 +138,8 @@ public interface DeliveryControllerApi {
     @ResponseStatus(HttpStatus.OK)
     
     default List<DeliveryResponseDto> getAllDeliveries(
-        @Min(0) @Parameter(name = "page", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-        @Min(1) @Max(100) @Parameter(name = "size", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+        @Min(0) @Parameter(name = "page", description = "Номер страницы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(1) @Max(100) @Parameter(name = "size", description = "Количество элементов на странице", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

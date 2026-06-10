@@ -6,13 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.anton.springtest.dto.ProductUpdateDto;
 import ru.anton.springtest.dto.WarehouseCreateDto;
 import ru.anton.springtest.dto.WarehouseResponseDto;
 import ru.anton.springtest.dto.WarehouseUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.WarehouseMapper;
-import ru.anton.springtest.model.Product;
 import ru.anton.springtest.model.Warehouse;
 import ru.anton.springtest.repository.WarehouseRepository;
 
@@ -46,7 +44,7 @@ public class WarehouseService {
         return warehouseMapper.toResponseDto(warehouse);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<WarehouseResponseDto> getAllWarehouses(Pageable pageable) {
 
         Page<Warehouse> warehousePage = warehouseRepository.findWithLockByIsDeletedFalse(pageable);
@@ -59,34 +57,10 @@ public class WarehouseService {
 
         Warehouse warehouse = findWarehouseOrThrow(id);
 
-        if (dto.getProducts() == null || dto.getProducts().isEmpty()) {
-            warehouse.getProducts().clear();
-        } else {
-            warehouse.getProducts().removeIf(existingProduct ->
-                    dto.getProducts().stream()
-                            .filter(pDto -> pDto.getId() != null)
-                            .noneMatch(pDto -> pDto.getId().equals(existingProduct.getId()))
-            );
-
-            for (ProductUpdateDto pDto : dto.getProducts()) {
-                if (pDto.getId() != null) {
-                    Product existingProduct = productService.findByIdOrThrow(pDto.getId());
-
-                    if (!warehouse.getProducts().contains(existingProduct)) {
-                        warehouse.getProducts().add(existingProduct);
-                    }
-                } else {
-                    Product newProduct = new Product();
-                    warehouse.getProducts().add(newProduct);
-                }
-            }
-        }
-
         warehouseMapper.updateEntity(dto, warehouse);
 
-        Warehouse updatedWarehouse = warehouseRepository.save(warehouse);
         log.info("Успешно обновлен склад с ID: {}", id);
-        return warehouseMapper.toResponseDto(updatedWarehouse);
+        return warehouseMapper.toResponseDto(warehouse);
     }
 
     @Transactional
@@ -96,7 +70,10 @@ public class WarehouseService {
 
         warehouse.setIsDeleted(true);
 
-        warehouseRepository.save(warehouse);
+        if (warehouse.getProducts() != null) {
+            warehouse.getProducts().clear();
+        }
+
         log.info("Склад с ID {} и его связи с товарами переведены в статус удаленных", id);
     }
 

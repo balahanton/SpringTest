@@ -22,16 +22,14 @@ import jakarta.annotation.Generated;
  * WarehouseResponseDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class WarehouseResponseDto {
 
-  @Valid 
   private UUID id;
 
-  
   private String name;
 
-  @Valid 
+  @Valid
   private List<@Valid ProductResponseDto> products;
 
   public WarehouseResponseDto id(UUID id) {
@@ -43,6 +41,7 @@ public class WarehouseResponseDto {
    * Get id
    * @return id
   */
+  @Valid 
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public UUID getId() {
@@ -62,6 +61,7 @@ public class WarehouseResponseDto {
    * Get name
    * @return name
   */
+  
   @Schema(name = "name", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -89,6 +89,7 @@ public class WarehouseResponseDto {
    * Get products
    * @return products
   */
+  @Valid 
   @Schema(name = "products", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("products")
   public List<@Valid ProductResponseDto> getProducts() {
@@ -140,3 +141,4 @@ public class WarehouseResponseDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

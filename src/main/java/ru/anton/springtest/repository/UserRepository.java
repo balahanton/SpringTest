@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import ru.anton.springtest.model.Delivery;
 import ru.anton.springtest.model.User;
 
 import java.util.Optional;
@@ -26,6 +25,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findById(@Nonnull UUID id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph(attributePaths = {"details"})
     Page<User> findWithLockByIsDeletedFalse(Pageable pageable);
 }

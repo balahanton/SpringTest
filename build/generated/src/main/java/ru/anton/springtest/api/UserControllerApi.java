@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "user-controller", description = "Управление пользователями и их заказами")
 public interface UserControllerApi {
@@ -86,17 +86,17 @@ public interface UserControllerApi {
 
 
     /**
-     * DELETE /api/v1/users/{id} : Удаленить пользователя и его заказы
+     * DELETE /api/v1/users/{id} : Удалить пользователя и его заказы
      *
      * @param id  (required)
-     * @return Пользователь и его заказы успешно удалены (status code 204)
+     * @return Успешно удалено (status code 204)
      */
     @Operation(
         operationId = "deleteUser",
-        summary = "Удаленить пользователя и его заказы",
+        summary = "Удалить пользователя и его заказы",
         tags = { "user-controller" },
         responses = {
-            @ApiResponse(responseCode = "204", description = "Пользователь и его заказы успешно удалены")
+            @ApiResponse(responseCode = "204", description = "Успешно удалено")
         }
     )
     @RequestMapping(
@@ -117,7 +117,7 @@ public interface UserControllerApi {
      * GET /api/v1/users : Получить список пользователей с вложенными заказами
      *
      * @param page Номер страницы (optional, default to 0)
-     * @param size Количество пользователей (optional, default to 10)
+     * @param size Количество элементов на странице (optional, default to 10)
      * @return Список успешно получен (status code 200)
      */
     @Operation(
@@ -139,7 +139,7 @@ public interface UserControllerApi {
     
     default List<UserResponseDto> getAllUsers(
         @Min(0) @Parameter(name = "page", description = "Номер страницы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-        @Min(1) @Max(100) @Parameter(name = "size", description = "Количество пользователей", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+        @Min(1) @Max(100) @Parameter(name = "size", description = "Количество элементов на странице", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

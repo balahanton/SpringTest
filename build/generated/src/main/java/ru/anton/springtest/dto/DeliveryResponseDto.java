@@ -19,19 +19,15 @@ import jakarta.annotation.Generated;
  * DeliveryResponseDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class DeliveryResponseDto {
 
-  @Valid 
   private UUID id;
 
-  
   private String address;
 
-  
   private String status;
 
-  @Valid 
   private DeliveryDetailsResponseDto details;
 
   public DeliveryResponseDto id(UUID id) {
@@ -43,6 +39,7 @@ public class DeliveryResponseDto {
    * Get id
    * @return id
   */
+  @Valid 
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public UUID getId() {
@@ -62,6 +59,7 @@ public class DeliveryResponseDto {
    * Get address
    * @return address
   */
+  
   @Schema(name = "address", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("address")
   public String getAddress() {
@@ -81,6 +79,7 @@ public class DeliveryResponseDto {
    * Get status
    * @return status
   */
+  
   @Schema(name = "status", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("status")
   public String getStatus() {
@@ -100,6 +99,7 @@ public class DeliveryResponseDto {
    * Get details
    * @return details
   */
+  @Valid 
   @Schema(name = "details", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("details")
   public DeliveryDetailsResponseDto getDetails() {
@@ -153,3 +153,4 @@ public class DeliveryResponseDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

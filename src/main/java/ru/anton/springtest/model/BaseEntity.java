@@ -1,18 +1,23 @@
 package ru.anton.springtest.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @MappedSuperclass
 @Setter
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
+    private UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

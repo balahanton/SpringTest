@@ -11,6 +11,7 @@ import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.UserMapper;
+import ru.anton.springtest.model.Order;
 import ru.anton.springtest.model.User;
 import ru.anton.springtest.repository.UserRepository;
 
@@ -43,7 +44,7 @@ public class UserService {
         return userMapper.toResponseDto(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<UserResponseDto> getAllUsers(Pageable pageable) {
 
         Page<User> userPage = userRepository.findWithLockByIsDeletedFalse(pageable);
@@ -55,16 +56,6 @@ public class UserService {
     public UserResponseDto updateUser(UUID id, UserUpdateDto dto) {
 
         User existingUser = findUserOrThrow(id);
-
-        if (dto.getOrders() == null || dto.getOrders().isEmpty()) {
-            existingUser.getOrders().clear();
-        } else {
-            existingUser.getOrders().removeIf(existingOrder ->
-                    dto.getOrders().stream()
-                            .filter(dtoOrder -> dtoOrder.getId() != null)
-                            .noneMatch(dtoOrder -> dtoOrder.getId().equals(existingOrder.getId()))
-            );
-        }
 
         userMapper.updateEntity(dto, existingUser);
 
@@ -79,11 +70,13 @@ public class UserService {
         User user = findUserOrThrow(id);
 
         user.setIsDeleted(true);
+
         if (user.getOrders() != null) {
-            user.getOrders().forEach(order -> order.setIsDeleted(true));
+            for (Order order : user.getOrders()) {
+                order.setIsDeleted(true);
+            }
         }
 
-        userRepository.save(user);
         log.info("Пользователь с ID {} и его заказы переведены в статус удаленных", id);
     }
 

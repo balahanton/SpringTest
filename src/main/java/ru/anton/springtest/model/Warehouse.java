@@ -7,7 +7,6 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -16,13 +15,9 @@ import java.util.UUID;
 @SQLRestriction("is_deleted = false")
 public class Warehouse extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "warehouses_products",
             schema = "spring_test",

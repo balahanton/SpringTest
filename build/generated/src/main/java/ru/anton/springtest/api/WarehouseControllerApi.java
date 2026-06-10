@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "warehouse-controller", description = "Управление складами и товарами")
 public interface WarehouseControllerApi {
@@ -89,14 +89,14 @@ public interface WarehouseControllerApi {
      * DELETE /api/v1/warehouses/{id} : Удаление склада и его связей с товарами
      *
      * @param id  (required)
-     * @return Склад успешно удален (status code 204)
+     * @return Успешно удалено (status code 204)
      */
     @Operation(
         operationId = "deleteWarehouse",
         summary = "Удаление склада и его связей с товарами",
         tags = { "warehouse-controller" },
         responses = {
-            @ApiResponse(responseCode = "204", description = "Склад успешно удален")
+            @ApiResponse(responseCode = "204", description = "Успешно удалено")
         }
     )
     @RequestMapping(
@@ -116,8 +116,8 @@ public interface WarehouseControllerApi {
     /**
      * GET /api/v1/warehouses : Получить список складов с товарами
      *
-     * @param page  (optional, default to 0)
-     * @param size  (optional, default to 10)
+     * @param page Номер страницы (optional, default to 0)
+     * @param size Количество элементов на странице (optional, default to 10)
      * @return Список складов получен (status code 200)
      */
     @Operation(
@@ -138,8 +138,8 @@ public interface WarehouseControllerApi {
     @ResponseStatus(HttpStatus.OK)
     
     default List<WarehouseResponseDto> getAllWarehouses(
-        @Min(0) @Parameter(name = "page", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-        @Min(1) @Max(100) @Parameter(name = "size", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+        @Min(0) @Parameter(name = "page", description = "Номер страницы", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(1) @Max(100) @Parameter(name = "size", description = "Количество элементов на странице", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

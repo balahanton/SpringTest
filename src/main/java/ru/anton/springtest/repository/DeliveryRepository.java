@@ -25,6 +25,5 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
     Optional<Delivery> findById(@Nonnull UUID id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph(attributePaths = {"details"})
     Page<Delivery> findWithLockByIsDeletedFalse(Pageable pageable);
 }

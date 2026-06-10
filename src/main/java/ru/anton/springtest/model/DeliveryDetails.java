@@ -5,18 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.util.UUID;
-
 @Entity
 @Getter
 @Setter
 @Table(name = "delivery_details", schema = "spring_test")
 @SQLRestriction("is_deleted = false")
 public class DeliveryDetails extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     @Column(name = "courier_name")
     private String courierName;

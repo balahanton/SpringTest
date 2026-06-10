@@ -17,10 +17,9 @@ import jakarta.annotation.Generated;
  * OrderCreateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class OrderCreateDto {
 
-  @NotNull @Size(min = 5, max = 255) 
   private String description;
 
   public OrderCreateDto() {
@@ -43,6 +42,7 @@ public class OrderCreateDto {
    * Get description
    * @return description
   */
+  @NotNull @Size(min = 5, max = 255) 
   @Schema(name = "description", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("description")
   public String getDescription() {
@@ -90,3 +90,4 @@ public class OrderCreateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

@@ -21,13 +21,12 @@ import jakarta.annotation.Generated;
  * WarehouseUpdateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-08T14:28:59.128101500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class WarehouseUpdateDto {
 
-  @NotNull @Size(min = 5, max = 255) 
   private String name;
 
-  @Valid 
+  @Valid
   private List<@Valid ProductUpdateDto> products;
 
   public WarehouseUpdateDto() {
@@ -50,6 +49,7 @@ public class WarehouseUpdateDto {
    * Get name
    * @return name
   */
+  @NotNull @Size(min = 5, max = 255) 
   @Schema(name = "name", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -77,6 +77,7 @@ public class WarehouseUpdateDto {
    * Get products
    * @return products
   */
+  @Valid 
   @Schema(name = "products", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("products")
   public List<@Valid ProductUpdateDto> getProducts() {
@@ -126,3 +127,4 @@ public class WarehouseUpdateDto {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

@@ -54,7 +54,6 @@ openApiGenerate {
     outputDir = layout.buildDirectory.dir("generated").get().asFile.toString()
     apiPackage = "ru.anton.springtest.api"
     modelPackage = "ru.anton.springtest.dto"
-    templateDir = "$projectDir/src/main/resources/templates"
     configOptions = [
             interfaceOnly: "true",
             useSpringBoot3: "true",
