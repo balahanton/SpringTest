@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,5 +23,5 @@ public class Product extends BaseEntity {
     private BigDecimal price;
 
     @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
-    private List<Warehouse> warehouses = new ArrayList<>();
+    private List<Warehouse> warehouses;
 }

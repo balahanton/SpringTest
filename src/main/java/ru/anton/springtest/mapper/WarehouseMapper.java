@@ -14,19 +14,12 @@ import java.util.List;
 )
 public interface WarehouseMapper {
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "name", source = "name"),
-            @Mapping(target = "products", source = "products")
-    })
     WarehouseResponseDto toResponseDto(Warehouse warehouse);
 
     List<WarehouseResponseDto> toResponseDtoList(List<Warehouse> warehouses);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "name", source = "name"),
-            @Mapping(target = "products", source = "products"),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
@@ -35,41 +28,49 @@ public interface WarehouseMapper {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "name", source = "name"),
-            @Mapping(target = "products", source = "products"),
+            @Mapping(target = "products", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
     })
     void updateEntity(WarehouseUpdateDto dto, @MappingTarget Warehouse warehouse);
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "title", source = "title"),
-            @Mapping(target = "price", source = "price"),
-            @Mapping(target = "warehouses", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "isDeleted", ignore = true)
-    })
-    void updateProductFromDto(ProductUpdateDto dto, @MappingTarget Product product);
+    default void updateProductFromDto(ProductUpdateDto dto, @MappingTarget Product product) {
+        if (dto == null || product == null) {
+            return;
+        }
+        product.setTitle(dto.getTitle());
+        product.setPrice(dto.getPrice());
+    }
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "title", source = "title"),
-            @Mapping(target = "price", source = "price")
-    })
-    ProductResponseDto toProductResponseDto(Product product);
+    default Product toProductEntityFromUpdate(ProductUpdateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Product product = new Product();
+        product.setTitle(dto.getTitle());
+        product.setPrice(dto.getPrice());
+        return product;
+    }
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "title", source = "title"),
-            @Mapping(target = "price", source = "price"),
-            @Mapping(target = "warehouses", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "isDeleted", ignore = true)
-    })
-    Product toProductEntity(ProductCreateDto dto);
+    default ProductResponseDto toProductResponseDto(Product product) {
+        if (product == null) {
+            return null;
+        }
+        ProductResponseDto dto = new ProductResponseDto();
+        dto.setId(product.getId());
+        dto.setTitle(product.getTitle());
+        dto.setPrice(product.getPrice());
+        return dto;
+    }
 
+    default Product toProductEntity(ProductCreateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Product product = new Product();
+        product.setTitle(dto.getTitle());
+        product.setPrice(dto.getPrice());
+        return product;
+    }
 }

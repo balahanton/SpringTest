@@ -180,6 +180,14 @@ paths:
       operationId: deleteWarehouse
       parameters:
         - $ref: '#/components/parameters/IdParam'
+        - name: productIds
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
       responses:
         '204':
           $ref: '#/components/responses/NoContent'

@@ -13,29 +13,12 @@ import java.util.List;
 )
 public interface DeliveryMapper {
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "address", source = "address"),
-            @Mapping(target = "status", source = "status"),
-            @Mapping(target = "details.id", source = "details.id"),
-            @Mapping(target = "details.courierName", source = "details.courierName"),
-            @Mapping(target = "details.deliveryNotes", source = "details.deliveryNotes")
-    })
     DeliveryResponseDto toResponseDto(Delivery delivery);
 
     List<DeliveryResponseDto> toResponseDtoList(List<Delivery> deliveries);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "address", source = "address"),
-            @Mapping(target = "status", source = "status"),
-            @Mapping(target = "details.id", ignore = true),
-            @Mapping(target = "details.courierName", source = "details.courierName"),
-            @Mapping(target = "details.deliveryNotes", source = "details.deliveryNotes"),
-            @Mapping(target = "details.delivery", ignore = true),
-            @Mapping(target = "details.createdAt", ignore = true),
-            @Mapping(target = "details.updatedAt", ignore = true),
-            @Mapping(target = "details.isDeleted", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
@@ -44,49 +27,40 @@ public interface DeliveryMapper {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "address", source = "address"),
-            @Mapping(target = "status", source = "status"),
-            @Mapping(target = "details.id", ignore = true),
-            @Mapping(target = "details.courierName", source = "details.courierName"),
-            @Mapping(target = "details.deliveryNotes", source = "details.deliveryNotes"),
-            @Mapping(target = "details.delivery", ignore = true),
-            @Mapping(target = "details.createdAt", ignore = true),
-            @Mapping(target = "details.updatedAt", ignore = true),
-            @Mapping(target = "details.isDeleted", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
     })
     void updateEntity(DeliveryUpdateDto dto, @MappingTarget Delivery delivery);
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "courierName", source = "courierName"),
-            @Mapping(target = "deliveryNotes", source = "deliveryNotes")
-    })
-    DeliveryDetailsResponseDto toDetailsResponseDto(DeliveryDetails details);
+    default DeliveryDetailsResponseDto toDetailsResponseDto(DeliveryDetails details) {
+        if (details == null) {
+            return null;
+        }
+        DeliveryDetailsResponseDto dto = new DeliveryDetailsResponseDto();
+        dto.setId(details.getId());
+        dto.setCourierName(details.getCourierName());
+        dto.setDeliveryNotes(details.getDeliveryNotes());
+        return dto;
+    }
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "courierName", source = "courierName"),
-            @Mapping(target = "deliveryNotes", source = "deliveryNotes"),
-            @Mapping(target = "delivery", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "isDeleted", ignore = true)
-    })
-    DeliveryDetails toDetailsEntity(DeliveryDetailsCreateDto dto);
+    default DeliveryDetails toDetailsEntity(DeliveryDetailsCreateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        DeliveryDetails details = new DeliveryDetails();
+        details.setCourierName(dto.getCourierName());
+        details.setDeliveryNotes(dto.getDeliveryNotes());
+        return details;
+    }
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "courierName", source = "courierName"),
-            @Mapping(target = "deliveryNotes", source = "deliveryNotes"),
-            @Mapping(target = "delivery", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "isDeleted", ignore = true)
-    })
-    void updateDetailsEntity(DeliveryDetailsUpdateDto dto, @MappingTarget DeliveryDetails details);
+    default void updateDetailsEntity(DeliveryDetailsUpdateDto dto, @MappingTarget DeliveryDetails details) {
+        if (dto == null || details == null) {
+            return;
+        }
+        details.setCourierName(dto.getCourierName());
+        details.setDeliveryNotes(dto.getDeliveryNotes());
+    }
 
     @AfterMapping
     default void linkDetails(@MappingTarget Delivery delivery) {

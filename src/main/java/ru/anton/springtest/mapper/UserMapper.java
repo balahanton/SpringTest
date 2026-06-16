@@ -14,19 +14,12 @@ import java.util.List;
 )
 public interface UserMapper {
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "username", source = "username"),
-            @Mapping(target = "orders", source = "orders")
-    })
     UserResponseDto toResponseDto(User user);
 
     List<UserResponseDto> toResponseDtoList(List<User> users);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "username", source = "username"),
-            @Mapping(target = "orders", source = "orders"),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
@@ -35,39 +28,40 @@ public interface UserMapper {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "username", source = "username"),
-            @Mapping(target = "orders", source = "orders"),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "isDeleted", ignore = true)
     })
     void updateEntity(UserUpdateDto dto, @MappingTarget User user);
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "description", source = "description")
-    })
-    OrderResponseDto toOrderResponseDto(Order order);
+    default OrderResponseDto toOrderResponseDto(Order order) {
+        if (order == null) {
+            return null;
+        }
+        OrderResponseDto dto = new OrderResponseDto();
+        dto.setId(order.getId());
+        dto.setDescription(order.getDescription());
+        return dto;
+    }
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "description", source = "description"),
-            @Mapping(target = "user", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "isDeleted", ignore = true)
-    })
-    Order toOrderEntity(OrderCreateDto dto);
+    default Order toOrderEntity(OrderCreateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Order order = new Order();
+        order.setDescription(dto.getDescription());
+        return order;
+    }
 
-    @Mappings({
-            @Mapping(target = "id", source = "id"),
-            @Mapping(target = "description", source = "description"),
-            @Mapping(target = "user", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "isDeleted", ignore = true)
-    })
-    Order toOrderEntityFromUpdate(OrderUpdateDto dto);
+    default Order toOrderEntityFromUpdate(OrderUpdateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Order order = new Order();
+        order.setId(dto.getId());
+        order.setDescription(dto.getDescription());
+        return order;
+    }
 
     @AfterMapping
     default void linkOrders(@MappingTarget User user) {
@@ -77,5 +71,4 @@ public interface UserMapper {
             }
         }
     }
-
 }

@@ -41,7 +41,7 @@ public class WarehouseController implements WarehouseControllerApi {
     }
 
     @Override
-    public void deleteWarehouse(UUID id) {
-        warehouseService.deleteWarehouse(id);
+    public void deleteWarehouse(UUID id, List<UUID> productIds) {
+        warehouseService.deleteWarehouseProducts(id, productIds);
     }
 }

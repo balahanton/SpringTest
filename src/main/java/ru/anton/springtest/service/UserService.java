@@ -77,6 +77,8 @@ public class UserService {
             }
         }
 
+        userRepository.save(user);
+
         log.info("Пользователь с ID {} и его заказы переведены в статус удаленных", id);
     }
 

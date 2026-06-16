@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-10T18:56:10.992948900+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-16T15:53:58.385910500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "warehouse-controller", description = "Управление складами и товарами")
 public interface WarehouseControllerApi {
@@ -89,6 +89,7 @@ public interface WarehouseControllerApi {
      * DELETE /api/v1/warehouses/{id} : Удаление склада и его связей с товарами
      *
      * @param id  (required)
+     * @param productIds  (optional)
      * @return Успешно удалено (status code 204)
      */
     @Operation(
@@ -106,7 +107,8 @@ public interface WarehouseControllerApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     
     default void deleteWarehouse(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") UUID id
+        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") UUID id,
+        @Parameter(name = "productIds", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "productIds", required = false) List<UUID> productIds
     ) {
         throw new IllegalArgumentException("Not implemented");
 
