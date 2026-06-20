@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-16T15:53:58.385910500+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-20T11:15:04.901132100+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "warehouse-controller", description = "Управление складами и товарами")
 public interface WarehouseControllerApi {
@@ -108,7 +108,7 @@ public interface WarehouseControllerApi {
     
     default void deleteWarehouse(
         @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") UUID id,
-        @Parameter(name = "productIds", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "productIds", required = false) List<UUID> productIds
+        @Size(min = 1) @Parameter(name = "productIds", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "productIds", required = false) List<UUID> productIds
     ) {
         throw new IllegalArgumentException("Not implemented");
 

@@ -18,7 +18,6 @@ import ru.anton.springtest.repository.WarehouseRepository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,10 +63,7 @@ public class WarehouseService {
         Warehouse warehouse = findWarehouseOrThrow(id);
 
         if (dto.getProducts() != null) {
-            List<UUID> productIdsToUpdate = dto.getProducts().stream()
-                    .map(ProductUpdateDto::getId)
-                    .filter(Objects::nonNull)
-                    .toList();
+            List<UUID> productIdsToUpdate = warehouseMapper.extractProductIdsToUpdate(dto.getProducts());
 
             List<Product> existingProductsFromDb = productService.findAllByIds(productIdsToUpdate);
 
@@ -79,10 +75,6 @@ public class WarehouseService {
                     Product dbProduct = productMap.get(pDto.getId());
                     if (dbProduct != null) {
                         warehouseMapper.updateProductFromDto(pDto, dbProduct);
-
-                        if (!warehouse.getProducts().contains(dbProduct)) {
-                            warehouse.getProducts().add(dbProduct);
-                        }
                     }
                 } else {
                     Product newProduct = warehouseMapper.toProductEntityFromUpdate(pDto);
@@ -104,21 +96,18 @@ public class WarehouseService {
 
         warehouse.setIsDeleted(true);
 
-        if (productIdsToDelete != null && !productIdsToDelete.isEmpty()) {
+        if (productIdsToDelete != null) {
 
-            if (warehouse.getProducts() != null) {
-                warehouse.getProducts().removeIf(product ->
-                        productIdsToDelete.contains(product.getId())
-                );
-            }
+            List<Product> productsToDelete = warehouse.getProducts().stream()
+                    .filter(product -> productIdsToDelete.contains(product.getId()))
+                    .toList();
 
-            List<Product> productsToDelete = productService.findAllByIds(productIdsToDelete);
-            for (Product product : productsToDelete) {
-                product.setIsDeleted(true);
-            }
+            warehouse.getProducts().removeAll(productsToDelete);
 
+            productsToDelete.forEach(product -> product.setIsDeleted(true));
             productService.saveAll(productsToDelete);
-            log.info("Связанные товары в количестве {} помечены как удаленные", productIdsToDelete.size());
+
+            log.info("Связанные товары в количестве {} помечены как удаленные", productsToDelete.size());
         }
 
         warehouseRepository.save(warehouse);

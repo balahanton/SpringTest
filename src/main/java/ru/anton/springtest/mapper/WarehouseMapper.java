@@ -6,6 +6,8 @@ import ru.anton.springtest.model.Product;
 import ru.anton.springtest.model.Warehouse;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -72,5 +74,15 @@ public interface WarehouseMapper {
         product.setTitle(dto.getTitle());
         product.setPrice(dto.getPrice());
         return product;
+    }
+
+    default List<UUID> extractProductIdsToUpdate(List<ProductUpdateDto> products) {
+        if (products == null) {
+            return List.of();
+        }
+        return products.stream()
+                .map(ProductUpdateDto::getId)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }
