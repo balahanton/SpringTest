@@ -6,6 +6,7 @@ import ru.anton.springtest.model.Product;
 import ru.anton.springtest.model.Warehouse;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -38,11 +39,12 @@ public interface WarehouseMapper {
     void updateEntity(WarehouseUpdateDto dto, @MappingTarget Warehouse warehouse);
 
     default void updateProductFromDto(ProductUpdateDto dto, @MappingTarget Product product) {
-        if (dto == null || product == null) {
-            return;
-        }
         product.setTitle(dto.getTitle());
         product.setPrice(dto.getPrice());
+    }
+
+    default void updateProductsFromDtos(List<ProductUpdateDto> dtos, Map<UUID, Product> productMap) {
+        dtos.forEach(dto -> updateProductFromDto(dto, productMap.get(dto.getId())));
     }
 
     default Product toProductEntityFromUpdate(ProductUpdateDto dto) {

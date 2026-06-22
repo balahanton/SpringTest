@@ -19,7 +19,7 @@ import jakarta.annotation.Generated;
  * ProductUpdateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-20T11:15:04.901132100+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-22T11:29:31.079268100+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class ProductUpdateDto {
 
   private UUID id;
@@ -27,6 +27,17 @@ public class ProductUpdateDto {
   private String title;
 
   private BigDecimal price;
+
+  public ProductUpdateDto() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public ProductUpdateDto(UUID id) {
+    this.id = id;
+  }
 
   public ProductUpdateDto id(UUID id) {
     this.id = id;
@@ -37,8 +48,8 @@ public class ProductUpdateDto {
    * Get id
    * @return id
   */
-  @Valid 
-  @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull @Valid 
+  @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("id")
   public UUID getId() {
     return id;

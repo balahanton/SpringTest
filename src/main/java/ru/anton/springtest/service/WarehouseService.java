@@ -71,16 +71,12 @@ public class WarehouseService {
                     .collect(Collectors.toMap(Product::getId, Function.identity()));
 
             for (ProductUpdateDto pDto : dto.getProducts()) {
-                if (pDto.getId() != null) {
-                    Product dbProduct = productMap.get(pDto.getId());
-                    if (dbProduct != null) {
-                        warehouseMapper.updateProductFromDto(pDto, dbProduct);
-                    }
-                } else {
-                    Product newProduct = warehouseMapper.toProductEntityFromUpdate(pDto);
-                    warehouse.getProducts().add(newProduct);
+                if (productMap.get(pDto.getId()) == null) {
+                    throw new EntityNotFoundException("Продукт с ID " + pDto.getId() + " не найден");
                 }
             }
+
+            warehouseMapper.updateProductsFromDtos(dto.getProducts(), productMap);
         }
 
         warehouseMapper.updateEntity(dto, warehouse);
@@ -101,8 +97,6 @@ public class WarehouseService {
             List<Product> productsToDelete = warehouse.getProducts().stream()
                     .filter(product -> productIdsToDelete.contains(product.getId()))
                     .toList();
-
-            warehouse.getProducts().removeAll(productsToDelete);
 
             productsToDelete.forEach(product -> product.setIsDeleted(true));
             productService.saveAll(productsToDelete);
