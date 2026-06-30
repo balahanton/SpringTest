@@ -99,7 +99,6 @@ public class WarehouseService {
                     .toList();
 
             productsToDelete.forEach(product -> product.setIsDeleted(true));
-            productService.saveAll(productsToDelete);
 
             log.info("Связанные товары в количестве {} помечены как удаленные", productsToDelete.size());
         }
