@@ -1,0 +1,554 @@
+openapi: 3.0.3
+info:
+  title: Shop API
+  version: 1.0.0
+
+tags:
+  - name: user-controller
+    description: Управление пользователями и их заказами
+  - name: warehouse-controller
+    description: Управление складами и товарами
+  - name: delivery-controller
+    description: Управление доставками и их деталями
+
+paths:
+  /api/v1/users:
+    post:
+      tags:
+        - user-controller
+      summary: Создать пользователя вместе с его заказами
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDto'
+      responses:
+        '201':
+          description: Пользователь и заказы успешно созданы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+
+    get:
+      tags:
+        - user-controller
+      summary: Получить список пользователей с вложенными заказами
+      operationId: getAllUsers
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Список успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseDto'
+
+  /api/v1/users/{id}:
+    get:
+      tags:
+        - user-controller
+      summary: Получить пользователя по ID с его заказами
+      operationId: getUserById
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Пользователь найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+
+    put:
+      tags:
+        - user-controller
+      summary: Обновить данные пользователя и его заказов
+      operationId: updateUser
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateDto'
+      responses:
+        '200':
+          description: Данные успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDto'
+
+    delete:
+      tags:
+        - user-controller
+      summary: Удалить пользователя и его заказы
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+  /api/v1/warehouses:
+    post:
+      tags:
+        - warehouse-controller
+      summary: Создать склад вместе с товарами
+      operationId: createWarehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarehouseCreateDto'
+      responses:
+        '201':
+          description: Склад успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarehouseResponseDto'
+
+    get:
+      tags:
+        - warehouse-controller
+      summary: Получить список складов с товарами
+      operationId: getAllWarehouses
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Список складов получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WarehouseResponseDto'
+
+  /api/v1/warehouses/{id}:
+    get:
+      tags:
+        - warehouse-controller
+      summary: Получить склад по ID со всеми товарами
+      operationId: getWarehouseById
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Склад найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarehouseResponseDto'
+
+    put:
+      tags:
+        - warehouse-controller
+      summary: Обновить склад и список его товаров
+      operationId: updateWarehouse
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarehouseUpdateDto'
+      responses:
+        '200':
+          description: Склад обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarehouseResponseDto'
+
+    delete:
+      tags:
+        - warehouse-controller
+      summary: Удаление склада и его связей с товарами
+      operationId: deleteWarehouse
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - name: productIds
+          in: query
+          required: false
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: string
+              format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+  /api/v1/deliveries:
+    post:
+      tags:
+        - delivery-controller
+      summary: Создать доставку вместе с деталями
+      operationId: createDelivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryCreateDto'
+      responses:
+        '201':
+          description: Доставка успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponseDto'
+
+    get:
+      tags:
+        - delivery-controller
+      summary: Получить список доставок
+      operationId: getAllDeliveries
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Список получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryResponseDto'
+
+  /api/v1/deliveries/{id}:
+    get:
+      tags:
+        - delivery-controller
+      summary: Получить доставку по ID
+      operationId: getDeliveryById
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Доставка найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponseDto'
+
+    put:
+      tags:
+        - delivery-controller
+      summary: Обновить доставку и детали
+      operationId: updateDelivery
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryUpdateDto'
+      responses:
+        '200':
+          description: Доставка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryResponseDto'
+
+    delete:
+      tags:
+        - delivery-controller
+      summary: Удаление доставки и деталей
+      operationId: deleteDelivery
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+components:
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    PageParam:
+      name: page
+      in: query
+      required: false
+      description: Номер страницы
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    SizeParam:
+      name: size
+      in: query
+      required: false
+      description: Количество элементов на странице
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+  responses:
+    NoContent:
+      description: Успешно удалено
+
+  schemas:
+    UserCreateDto:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 50
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderCreateDto'
+
+    OrderCreateDto:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          minLength: 5
+          maxLength: 255
+
+    UserUpdateDto:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 50
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderUpdateDto'
+
+    OrderUpdateDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Если ID передан — обновляем существующий заказ, если нет — создаем новый внутри пользователя
+        description:
+          type: string
+          minLength: 5
+          maxLength: 255
+
+    UserResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponseDto'
+
+    OrderResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string
+
+    WarehouseCreateDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 5
+          maxLength: 255
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCreateDto'
+
+    ProductCreateDto:
+      type: object
+      required:
+        - title
+        - price
+      properties:
+        title:
+          type: string
+          minLength: 5
+          maxLength: 255
+        price:
+          type: number
+          minimum: 1
+
+    WarehouseUpdateDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 5
+          maxLength: 255
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductUpdateDto'
+
+    ProductUpdateDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 5
+          maxLength: 255
+        price:
+          type: number
+          minimum: 1
+
+    WarehouseResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponseDto'
+
+    ProductResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        price:
+          type: number
+
+    DeliveryCreateDto:
+      type: object
+      required:
+        - address
+        - status
+      properties:
+        address:
+          type: string
+          minLength: 5
+          maxLength: 255
+        status:
+          type: string
+        details:
+          $ref: '#/components/schemas/DeliveryDetailsCreateDto'
+
+    DeliveryDetailsCreateDto:
+      type: object
+      required:
+        - courierName
+      properties:
+        courierName:
+          type: string
+          minLength: 2
+          maxLength: 50
+        deliveryNotes:
+          type: string
+          minLength: 5
+          maxLength: 255
+
+    DeliveryUpdateDto:
+      type: object
+      required:
+        - address
+        - status
+      properties:
+        address:
+          type: string
+          minLength: 5
+          maxLength: 255
+        status:
+          type: string
+        details:
+          $ref: '#/components/schemas/DeliveryDetailsUpdateDto'
+
+    DeliveryDetailsUpdateDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        courierName:
+          type: string
+          minLength: 2
+          maxLength: 50
+        deliveryNotes:
+          type: string
+          minLength: 5
+          maxLength: 255
+
+    DeliveryResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        address:
+          type: string
+        status:
+          type: string
+        details:
+          $ref: '#/components/schemas/DeliveryDetailsResponseDto'
+
+    DeliveryDetailsResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        courierName:
+          type: string
+        deliveryNotes:
+          type: string

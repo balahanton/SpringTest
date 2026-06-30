@@ -1,0 +1,144 @@
+package ru.anton.springtest.dto;
+
+import java.net.URI;
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import java.math.BigDecimal;
+import java.util.UUID;
+import java.time.OffsetDateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+
+import java.util.*;
+import jakarta.annotation.Generated;
+
+/**
+ * ProductUpdateDto
+ */
+
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-22T11:29:31.079268100+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+public class ProductUpdateDto {
+
+  private UUID id;
+
+  private String title;
+
+  private BigDecimal price;
+
+  public ProductUpdateDto() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public ProductUpdateDto(UUID id) {
+    this.id = id;
+  }
+
+  public ProductUpdateDto id(UUID id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+  */
+  @NotNull @Valid 
+  @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("id")
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
+
+  public ProductUpdateDto title(String title) {
+    this.title = title;
+    return this;
+  }
+
+  /**
+   * Get title
+   * @return title
+  */
+  @Size(min = 5, max = 255) 
+  @Schema(name = "title", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("title")
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public ProductUpdateDto price(BigDecimal price) {
+    this.price = price;
+    return this;
+  }
+
+  /**
+   * Get price
+   * minimum: 1
+   * @return price
+  */
+  @Valid @DecimalMin("1") 
+  @Schema(name = "price", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("price")
+  public BigDecimal getPrice() {
+    return price;
+  }
+
+  public void setPrice(BigDecimal price) {
+    this.price = price;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ProductUpdateDto productUpdateDto = (ProductUpdateDto) o;
+    return Objects.equals(this.id, productUpdateDto.id) &&
+        Objects.equals(this.title, productUpdateDto.title) &&
+        Objects.equals(this.price, productUpdateDto.price);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, title, price);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ProductUpdateDto {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
+    sb.append("    price: ").append(toIndentedString(price)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+}
+
