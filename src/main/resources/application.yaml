@@ -31,3 +31,43 @@ spring:
       cache-null-values: false
       use-key-prefix: true
       key-prefix: "springtest:cache:"
+
+enrichment-service:
+  url: http://localhost:8081
+
+resilience4j:
+  retry:
+    instances:
+      enrichmentService:
+        max-attempts: 3
+        wait-duration: 300ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        exponential-max-wait-duration: 5s
+        randomized-wait-factor: 0.3
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.web.client.RestClientException
+        ignore-exceptions:
+          - io.github.resilience4j.circuitbreaker.CallNotPermittedException
+          - io.github.resilience4j.ratelimiter.RequestNotPermitted
+
+  circuitbreaker:
+    instances:
+      enrichmentService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        record-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.web.client.RestClientException
+
+  ratelimiter:
+    instances:
+      enrichmentService:
+        limit-for-period: 20
+        limit-refresh-period: 1s
+        timeout-duration: 500ms

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.anton.springtest.client.EnrichmentServiceAdapter;
+import ru.anton.springtest.client.dto.UserEnrichmentClientDto;
 import ru.anton.springtest.config.CacheKeyGeneratorConfig;
 import ru.anton.springtest.config.RedisCacheConfig;
 import ru.anton.springtest.dto.UserCreateDto;
@@ -21,6 +23,7 @@ import ru.anton.springtest.model.Order;
 import ru.anton.springtest.model.User;
 import ru.anton.springtest.repository.UserRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +34,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final EnrichmentServiceAdapter enrichmentServiceAdapter;
 
     @Transactional
     @CachePut(cacheNames = RedisCacheConfig.USERS_CACHE, key = "#result.id")
@@ -41,7 +45,22 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         log.info("Пользователь успешно создан с ID: {}", savedUser.getId());
-        return userMapper.toResponseDto(savedUser);
+        UserResponseDto responseDto = userMapper.toResponseDto(savedUser);
+
+        if (dto.getDiscountCardNumber() != null) {
+            BigDecimal balance = dto.getBalance() != null
+                    ? dto.getBalance()
+                    : BigDecimal.ZERO;
+
+            UserEnrichmentClientDto enrichment = enrichmentServiceAdapter.createEnrichment(
+                    savedUser.getId(),
+                    dto.getDiscountCardNumber(),
+                    balance
+            );
+            applyEnrichment(responseDto, enrichment);
+        }
+
+        return responseDto;
     }
 
     @Transactional(readOnly = true)
@@ -49,8 +68,12 @@ public class UserService {
     public UserResponseDto getUserById(UUID id) {
 
         User user = findUserOrThrow(id);
+        UserResponseDto responseDto = userMapper.toResponseDto(user);
 
-        return userMapper.toResponseDto(user);
+        UserEnrichmentClientDto enrichment = enrichmentServiceAdapter.getEnrichment(id);
+        applyEnrichment(responseDto, enrichment);
+
+        return responseDto;
     }
 
     @Transactional
@@ -105,5 +128,12 @@ public class UserService {
                     log.error("Пользователь с ID {} не найден или был удален", id);
                     return new EntityNotFoundException("User with ID " + id + " not found");
                 });
+    }
+
+    private void applyEnrichment(UserResponseDto responseDto, UserEnrichmentClientDto enrichment) {
+        if (enrichment != null) {
+            responseDto.setDiscountCardNumber(enrichment.getDiscountCardNumber());
+            responseDto.setBalance(enrichment.getBalance());
+        }
     }
 }

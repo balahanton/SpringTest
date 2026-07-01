@@ -34,6 +34,7 @@ public class RedisCacheConfig {
         BasicPolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType("ru.anton.springtest")
                 .allowIfSubType("java.util")
+                .allowIfSubType("java.math")
                 .build();
 
         GenericJacksonJsonRedisSerializer jsonSerializer = GenericJacksonJsonRedisSerializer.builder()
