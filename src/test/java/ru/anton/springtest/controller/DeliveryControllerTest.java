@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.anton.springtest.support.DeliveryTestFixtures.*;
+import static ru.anton.springtest.util.DeliveryTestFixtures.*;
 
 @DisplayName("DeliveryController — интеграционные тесты")
 public class DeliveryControllerTest extends AbstractIntegrationTest {

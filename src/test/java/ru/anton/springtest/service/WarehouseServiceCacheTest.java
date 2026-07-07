@@ -15,8 +15,8 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static ru.anton.springtest.support.WarehouseTestFixtures.DEFAULT_WAREHOUSE_NAME;
-import static ru.anton.springtest.support.WarehouseTestFixtures.newWarehouse;
+import static ru.anton.springtest.util.WarehouseTestFixtures.DEFAULT_WAREHOUSE_NAME;
+import static ru.anton.springtest.util.WarehouseTestFixtures.newWarehouse;
 
 @DisplayName("WarehouseService — тесты Redis-кэша")
 public class WarehouseServiceCacheTest extends AbstractIntegrationTest {

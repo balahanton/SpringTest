@@ -320,6 +320,8 @@ components:
       type: object
       required:
         - username
+        - discountCardNumber
+        - balance
       properties:
         username:
           type: string
@@ -332,12 +334,10 @@ components:
         discountCardNumber:
           type: string
           description: Номер скидочной карты
-          nullable: true
         balance:
           type: number
           description: Начальный баланс скидочной карты
           minimum: 0
-          nullable: true
 
     OrderCreateDto:
       type: object

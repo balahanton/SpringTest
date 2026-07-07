@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  * WarehouseUpdateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-01T10:03:20.584621+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-06T15:30:13.211754700+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class WarehouseUpdateDto {
 
   private String name;

@@ -6,8 +6,9 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.anton.springtest.client.dto.UserEnrichmentClientDto;
-import ru.anton.springtest.client.dto.UserEnrichmentCreateClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientDto;
+import ru.anton.springtest.dto.UserEnrichmentCreateClientDto;
+import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -30,7 +31,6 @@ public class EnrichmentServiceAdapter {
                 .discountCardNumber(discountCardNumber)
                 .balance(balance)
                 .build();
-        log.info("Отправляем запрос на создание обогащения в enrichment-service для userId: {}", userId);
         return enrichmentServiceClient.createEnrichment(request);
     }
 
@@ -38,7 +38,6 @@ public class EnrichmentServiceAdapter {
     @CircuitBreaker(name = RESILIENCE4J_INSTANCE)
     @RateLimiter(name = RESILIENCE4J_INSTANCE)
     public UserEnrichmentClientDto getEnrichment(UUID userId) {
-        log.info("Запрашиваем обогащение из enrichment-service для userId: {}", userId);
         return enrichmentServiceClient.getEnrichmentByUserId(userId);
     }
 
@@ -46,12 +45,18 @@ public class EnrichmentServiceAdapter {
                                                             BigDecimal balance, Exception ex) {
         log.warn("Enrichment-service недоступен при создании обогащения для userId: {}. Причина: {}",
                 userId, ex.getMessage());
-        return null;
+        throw new EnrichmentServiceUnavailableException(
+                "Не удалось создать данные обогащения для userId: " + userId, ex);
     }
 
     public UserEnrichmentClientDto getEnrichmentFallback(UUID userId, Exception ex) {
         log.warn("Enrichment-service недоступен при получении обогащения для userId: {}. Причина: {}",
                 userId, ex.getMessage());
-        return null;
+        throw new EnrichmentServiceUnavailableException(
+                "Не удалось получить данные обогащения для userId: " + userId, ex);
+    }
+
+    public void deleteEnrichment(UUID userId) {
+        enrichmentServiceClient.deleteEnrichmentByUserId(userId);
     }
 }

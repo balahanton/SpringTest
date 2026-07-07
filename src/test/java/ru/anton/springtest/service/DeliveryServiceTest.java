@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static ru.anton.springtest.support.DeliveryTestFixtures.*;
+import static ru.anton.springtest.util.DeliveryTestFixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("DeliveryService — юнит-тесты")

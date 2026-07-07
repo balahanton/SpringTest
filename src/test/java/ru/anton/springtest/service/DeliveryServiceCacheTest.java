@@ -19,7 +19,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static ru.anton.springtest.support.DeliveryTestFixtures.*;
+import static ru.anton.springtest.util.DeliveryTestFixtures.*;
 
 @DisplayName("DeliveryService — тесты Redis-кэша")
 public class DeliveryServiceCacheTest extends AbstractIntegrationTest {
@@ -63,8 +63,8 @@ public class DeliveryServiceCacheTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("после updateDelivery без деталей кэш обновляется свежими данными (@CachePut)")
-    void updateDelivery_withoutDetails_refreshesCacheEntry() {
+    @DisplayName("после updateDelivery кэш инвалидируется — следующий getDeliveryById снова идёт в БД")
+    void updateDelivery_withoutDetails_evictsCacheEntry() {
         deliveryService.getDeliveryById(deliveryId);
 
         DeliveryUpdateDto dto = deliveryUpdateDto(UPDATED_ADDRESS, UPDATED_STATUS);
@@ -73,7 +73,7 @@ public class DeliveryServiceCacheTest extends AbstractIntegrationTest {
         DeliveryResponseDto afterUpdate = deliveryService.getDeliveryById(deliveryId);
 
         assertThat(afterUpdate.getAddress()).isEqualTo(UPDATED_ADDRESS);
-        verify(deliveryRepository, times(2)).findById(deliveryId);
+        verify(deliveryRepository, times(3)).findById(deliveryId);
     }
 
     @Test

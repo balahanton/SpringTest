@@ -1,4 +1,4 @@
-package ru.anton.springtest.support;
+package ru.anton.springtest.util;
 
 import ru.anton.springtest.dto.ProductCreateDto;
 import ru.anton.springtest.dto.ProductUpdateDto;

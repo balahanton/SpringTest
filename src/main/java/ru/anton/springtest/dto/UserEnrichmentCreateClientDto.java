@@ -1,4 +1,4 @@
-package ru.anton.springtest.client.dto;
+package ru.anton.springtest.dto;
 
 import lombok.*;
 

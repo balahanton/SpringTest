@@ -1,4 +1,4 @@
-package ru.anton.springtest.support;
+package ru.anton.springtest.util;
 
 import ru.anton.springtest.dto.UserCreateDto;
 import ru.anton.springtest.dto.UserUpdateDto;
@@ -32,13 +32,12 @@ public final class UserTestFixtures {
     }
 
     public static UserCreateDto userCreateDto(String username) {
-        UserCreateDto dto = new UserCreateDto();
-        dto.setUsername(username);
-        return dto;
+        return userCreateDtoWithCard(username, DEFAULT_DISCOUNT_CARD, DEFAULT_BALANCE);
     }
 
     public static UserCreateDto userCreateDtoWithCard(String username, String cardNumber, BigDecimal balance) {
-        UserCreateDto dto = userCreateDto(username);
+        UserCreateDto dto = new UserCreateDto();
+        dto.setUsername(username);
         dto.setDiscountCardNumber(cardNumber);
         dto.setBalance(balance);
         return dto;

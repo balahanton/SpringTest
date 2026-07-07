@@ -12,8 +12,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @EnableCaching
@@ -39,7 +37,6 @@ public class RedisCacheConfig {
 
         GenericJacksonJsonRedisSerializer jsonSerializer = GenericJacksonJsonRedisSerializer.builder()
                 .enableDefaultTyping(typeValidator)
-                .enableSpringCacheNullValueSupport()
                 .build();
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
@@ -49,17 +46,8 @@ public class RedisCacheConfig {
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer));
 
-        Map<String, RedisCacheConfiguration> perCacheConfig = new HashMap<>();
-        perCacheConfig.put(USERS_CACHE, defaultConfig.entryTtl(DEFAULT_TTL));
-        perCacheConfig.put(USERS_PAGE_CACHE, defaultConfig.entryTtl(DEFAULT_TTL));
-        perCacheConfig.put(WAREHOUSES_CACHE, defaultConfig.entryTtl(DEFAULT_TTL));
-        perCacheConfig.put(WAREHOUSES_PAGE_CACHE, defaultConfig.entryTtl(DEFAULT_TTL));
-        perCacheConfig.put(DELIVERIES_CACHE, defaultConfig.entryTtl(DEFAULT_TTL));
-        perCacheConfig.put(DELIVERIES_PAGE_CACHE, defaultConfig.entryTtl(DEFAULT_TTL));
-
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
-                .withInitialCacheConfigurations(perCacheConfig)
                 .build();
     }
 }

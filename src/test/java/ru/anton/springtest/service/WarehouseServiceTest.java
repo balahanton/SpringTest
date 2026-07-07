@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static ru.anton.springtest.support.WarehouseTestFixtures.*;
+import static ru.anton.springtest.util.WarehouseTestFixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("WarehouseService — юнит-тесты")

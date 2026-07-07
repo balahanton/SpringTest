@@ -3,14 +3,12 @@ package ru.anton.springtest.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.anton.springtest.config.CacheKeyGeneratorConfig;
 import ru.anton.springtest.config.RedisCacheConfig;
 import ru.anton.springtest.dto.ProductUpdateDto;
 import ru.anton.springtest.dto.WarehouseCreateDto;
@@ -38,7 +36,6 @@ public class WarehouseService {
     private final WarehouseMapper warehouseMapper;
 
     @Transactional
-    @CachePut(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#result.id")
     @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, allEntries = true)
     public WarehouseResponseDto createWarehouse(WarehouseCreateDto dto) {
 
@@ -59,7 +56,7 @@ public class WarehouseService {
     }
 
     @Transactional
-    @Cacheable(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, keyGenerator = CacheKeyGeneratorConfig.PAGEABLE_KEY_GENERATOR)
+    @Cacheable(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, key = "#pageable")
     public List<WarehouseResponseDto> getAllWarehouses(Pageable pageable) {
 
         Page<Warehouse> warehousePage = warehouseRepository.findWithLockByIsDeletedFalse(pageable);
@@ -68,8 +65,10 @@ public class WarehouseService {
 
 
     @Transactional
-    @CachePut(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#id")
-    @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#id"),
+            @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, allEntries = true)
+    })
     public WarehouseResponseDto updateWarehouse(UUID id, WarehouseUpdateDto dto) {
 
         Warehouse warehouse = findWarehouseOrThrow(id);

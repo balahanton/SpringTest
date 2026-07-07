@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-01T10:03:20.584621+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-06T15:30:13.211754700+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 @Validated
 @Tag(name = "warehouse-controller", description = "Управление складами и товарами")
 public interface WarehouseControllerApi {

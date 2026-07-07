@@ -8,7 +8,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.exception.EntityNotFoundException;
+import ru.anton.springtest.exception.SagaExecutionException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -25,6 +27,10 @@ public class GlobalExceptionHandler {
     private static final String PROBLEM_VALIDATION_FAILED_DETAIL = "Указаны некорректные параметры или заполнены не все обязательные поля";
     private static final String PROBLEM_VALIDATION_ERRORS_KEY = "invalid_fields";
     private static final String CONSTRAINT_VIOLATION_FAILED = "Нарушение ограничений (Constraint Violation): {}";
+    private static final String ENRICHMENT_SERVICE_UNAVAILABLE = "Enrichment-service недоступен: {}";
+    private static final String PROBLEM_ENRICHMENT_UNAVAILABLE_TITLE = "Enrichment Service Unavailable";
+    private static final String SAGA_EXECUTION_FAILED = "Ошибка выполнения распределенной транзакции (Сага): {}";
+    private static final String PROBLEM_SAGA_FAILED_TITLE = "Saga Execution Failed";
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail handleEntityNotFound(EntityNotFoundException ex) {
@@ -74,6 +80,32 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle(PROBLEM_VALIDATION_FAILED_TITLE);
         problemDetail.setProperty("timestamp", Instant.now());
         problemDetail.setProperty(PROBLEM_VALIDATION_ERRORS_KEY, errors);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EnrichmentServiceUnavailableException.class)
+    public ProblemDetail handleEnrichmentServiceUnavailable(EnrichmentServiceUnavailableException ex) {
+        log.error(ENRICHMENT_SERVICE_UNAVAILABLE, ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+        problemDetail.setTitle(PROBLEM_ENRICHMENT_UNAVAILABLE_TITLE);
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(SagaExecutionException.class)
+    public ProblemDetail handleSagaExecutionException(SagaExecutionException ex) {
+        log.error(SAGA_EXECUTION_FAILED, ex.getMessage(), ex.getCause());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                ex.getMessage()
+        );
+        problemDetail.setTitle(PROBLEM_SAGA_FAILED_TITLE);
+        problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;
     }

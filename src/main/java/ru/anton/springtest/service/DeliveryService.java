@@ -3,14 +3,12 @@ package ru.anton.springtest.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.anton.springtest.config.CacheKeyGeneratorConfig;
 import ru.anton.springtest.config.RedisCacheConfig;
 import ru.anton.springtest.dto.DeliveryCreateDto;
 import ru.anton.springtest.dto.DeliveryResponseDto;
@@ -32,7 +30,6 @@ public class DeliveryService {
     private final DeliveryMapper deliveryMapper;
 
     @Transactional
-    @CachePut(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#result.id")
     @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, allEntries = true)
     public DeliveryResponseDto createDelivery(DeliveryCreateDto dto) {
 
@@ -53,7 +50,7 @@ public class DeliveryService {
     }
 
     @Transactional
-    @Cacheable(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, keyGenerator = CacheKeyGeneratorConfig.PAGEABLE_KEY_GENERATOR)
+    @Cacheable(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, key = "#pageable")
     public List<DeliveryResponseDto> getAllDeliveries(Pageable pageable) {
 
         Page<Delivery> deliveryPage = deliveryRepository.findWithLockByIsDeletedFalse(pageable);
@@ -61,8 +58,10 @@ public class DeliveryService {
     }
 
     @Transactional
-    @CachePut(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#id")
-    @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#id"),
+            @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, allEntries = true)
+    })
     public DeliveryResponseDto updateDelivery(UUID id, DeliveryUpdateDto dto) {
 
         Delivery existingDelivery = findDeliveryOrThrow(id);

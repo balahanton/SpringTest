@@ -7,17 +7,20 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.anton.springtest.AbstractIntegrationTest;
 import ru.anton.springtest.client.EnrichmentServiceAdapter;
 import ru.anton.springtest.dto.UserCreateDto;
+import ru.anton.springtest.dto.UserEnrichmentClientDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.model.User;
 import ru.anton.springtest.repository.UserRepository;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.anton.springtest.support.UserTestFixtures.*;
+import static ru.anton.springtest.util.UserTestFixtures.*;
 
 @DisplayName("UserController — интеграционные тесты")
 public class UserControllerTest extends AbstractIntegrationTest {
@@ -36,6 +39,11 @@ public class UserControllerTest extends AbstractIntegrationTest {
     @DisplayName("POST /api/v1/users с валидным телом — 201 и тело с id")
     void createUser_valid_returns201WithId() throws Exception {
         UserCreateDto dto = userCreateDto(DEFAULT_USERNAME);
+
+        UserEnrichmentClientDto enrichment = new UserEnrichmentClientDto();
+        enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
+        enrichment.setBalance(DEFAULT_BALANCE);
+        when(enrichmentServiceAdapter.createEnrichment(any(), any(), any())).thenReturn(enrichment);
 
         mockMvc.perform(postJson(USERS_URL, dto))
                 .andExpect(status().isCreated())
@@ -79,6 +87,13 @@ public class UserControllerTest extends AbstractIntegrationTest {
     @DisplayName("GET /api/v1/users/{id} для существующего пользователя — 200")
     void getUserById_existing_returns200() throws Exception {
         User saved = userRepository.save(newUser(DEFAULT_USERNAME));
+
+        UserEnrichmentClientDto enrichment = new UserEnrichmentClientDto();
+        enrichment.setUserId(saved.getId());
+        enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
+        enrichment.setBalance(DEFAULT_BALANCE);
+
+        when(enrichmentServiceAdapter.getEnrichment(saved.getId())).thenReturn(enrichment);
 
         mockMvc.perform(get(USER_BY_ID_URL, saved.getId()))
                 .andExpect(status().isOk())

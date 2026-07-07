@@ -3,7 +3,6 @@ package ru.anton.springtest.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
@@ -11,10 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.anton.springtest.client.EnrichmentServiceAdapter;
-import ru.anton.springtest.client.dto.UserEnrichmentClientDto;
-import ru.anton.springtest.config.CacheKeyGeneratorConfig;
 import ru.anton.springtest.config.RedisCacheConfig;
 import ru.anton.springtest.dto.UserCreateDto;
+import ru.anton.springtest.dto.UserEnrichmentClientDto;
 import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
@@ -22,8 +20,8 @@ import ru.anton.springtest.mapper.UserMapper;
 import ru.anton.springtest.model.Order;
 import ru.anton.springtest.model.User;
 import ru.anton.springtest.repository.UserRepository;
+import ru.anton.springtest.saga.CreateUserSagaOrchestrator;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,32 +33,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final EnrichmentServiceAdapter enrichmentServiceAdapter;
+    private final CreateUserSagaOrchestrator userSagaOrchestrator;
 
-    @Transactional
-    @CachePut(cacheNames = RedisCacheConfig.USERS_CACHE, key = "#result.id")
     @CacheEvict(cacheNames = RedisCacheConfig.USERS_PAGE_CACHE, allEntries = true)
     public UserResponseDto createUser(UserCreateDto dto) {
-
-        User user = userMapper.toEntity(dto);
-        User savedUser = userRepository.save(user);
-
-        log.info("Пользователь успешно создан с ID: {}", savedUser.getId());
-        UserResponseDto responseDto = userMapper.toResponseDto(savedUser);
-
-        if (dto.getDiscountCardNumber() != null) {
-            BigDecimal balance = dto.getBalance() != null
-                    ? dto.getBalance()
-                    : BigDecimal.ZERO;
-
-            UserEnrichmentClientDto enrichment = enrichmentServiceAdapter.createEnrichment(
-                    savedUser.getId(),
-                    dto.getDiscountCardNumber(),
-                    balance
-            );
-            applyEnrichment(responseDto, enrichment);
-        }
-
-        return responseDto;
+        return userSagaOrchestrator.execute(dto);
     }
 
     @Transactional(readOnly = true)
@@ -68,16 +45,17 @@ public class UserService {
     public UserResponseDto getUserById(UUID id) {
 
         User user = findUserOrThrow(id);
-        UserResponseDto responseDto = userMapper.toResponseDto(user);
-
         UserEnrichmentClientDto enrichment = enrichmentServiceAdapter.getEnrichment(id);
-        applyEnrichment(responseDto, enrichment);
+
+        UserResponseDto responseDto = userMapper.toResponseDto(user);
+        responseDto.setDiscountCardNumber(enrichment.getDiscountCardNumber());
+        responseDto.setBalance(enrichment.getBalance());
 
         return responseDto;
     }
 
     @Transactional
-    @Cacheable(cacheNames = RedisCacheConfig.USERS_PAGE_CACHE, keyGenerator = CacheKeyGeneratorConfig.PAGEABLE_KEY_GENERATOR)
+    @Cacheable(cacheNames = RedisCacheConfig.USERS_PAGE_CACHE, key = "#pageable")
     public List<UserResponseDto> getAllUsers(Pageable pageable) {
 
         Page<User> userPage = userRepository.findWithLockByIsDeletedFalse(pageable);
@@ -86,8 +64,10 @@ public class UserService {
     }
 
     @Transactional
-    @CachePut(cacheNames = RedisCacheConfig.USERS_CACHE, key = "#id")
-    @CacheEvict(cacheNames = RedisCacheConfig.USERS_PAGE_CACHE, allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(cacheNames = RedisCacheConfig.USERS_CACHE, key = "#id"),
+            @CacheEvict(cacheNames = RedisCacheConfig.USERS_PAGE_CACHE, allEntries = true)
+    })
     public UserResponseDto updateUser(UUID id, UserUpdateDto dto) {
 
         User existingUser = findUserOrThrow(id);
@@ -128,12 +108,5 @@ public class UserService {
                     log.error("Пользователь с ID {} не найден или был удален", id);
                     return new EntityNotFoundException("User with ID " + id + " not found");
                 });
-    }
-
-    private void applyEnrichment(UserResponseDto responseDto, UserEnrichmentClientDto enrichment) {
-        if (enrichment != null) {
-            responseDto.setDiscountCardNumber(enrichment.getDiscountCardNumber());
-            responseDto.setBalance(enrichment.getBalance());
-        }
     }
 }

@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * UserCreateDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-01T10:03:20.584621+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-06T15:30:13.211754700+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class UserCreateDto {
 
   private String username;
@@ -30,9 +30,9 @@ public class UserCreateDto {
   @Valid
   private List<@Valid OrderCreateDto> orders;
 
-  private String discountCardNumber = null;
+  private String discountCardNumber;
 
-  private BigDecimal balance = null;
+  private BigDecimal balance;
 
   public UserCreateDto() {
     super();
@@ -41,8 +41,10 @@ public class UserCreateDto {
   /**
    * Constructor with only required parameters
    */
-  public UserCreateDto(String username) {
+  public UserCreateDto(String username, String discountCardNumber, BigDecimal balance) {
     this.username = username;
+    this.discountCardNumber = discountCardNumber;
+    this.balance = balance;
   }
 
   public UserCreateDto username(String username) {
@@ -102,8 +104,8 @@ public class UserCreateDto {
    * Номер скидочной карты
    * @return discountCardNumber
   */
-  
-  @Schema(name = "discountCardNumber", description = "Номер скидочной карты", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "discountCardNumber", description = "Номер скидочной карты", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("discountCardNumber")
   public String getDiscountCardNumber() {
     return discountCardNumber;
@@ -123,8 +125,8 @@ public class UserCreateDto {
    * minimum: 0
    * @return balance
   */
-  @Valid @DecimalMin("0") 
-  @Schema(name = "balance", description = "Начальный баланс скидочной карты", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull @Valid @DecimalMin("0") 
+  @Schema(name = "balance", description = "Начальный баланс скидочной карты", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("balance")
   public BigDecimal getBalance() {
     return balance;
