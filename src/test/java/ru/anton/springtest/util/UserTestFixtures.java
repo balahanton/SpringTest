@@ -3,6 +3,7 @@ package ru.anton.springtest.util;
 import ru.anton.springtest.dto.UserCreateDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.model.Order;
+import ru.anton.springtest.model.SagaTaskStatus;
 import ru.anton.springtest.model.User;
 
 import java.math.BigDecimal;
@@ -19,8 +20,13 @@ public final class UserTestFixtures {
     }
 
     public static User newUser(String username) {
+        return newUserWithEnrichmentStatus(username, SagaTaskStatus.PENDING);
+    }
+
+    public static User newUserWithEnrichmentStatus(String username, SagaTaskStatus status) {
         User user = new User();
         user.setUsername(username);
+        user.setEnrichmentStatus(status);
         return user;
     }
 

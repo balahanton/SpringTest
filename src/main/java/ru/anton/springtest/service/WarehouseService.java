@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,6 @@ public class WarehouseService {
     private final WarehouseMapper warehouseMapper;
 
     @Transactional
-    @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, allEntries = true)
     public WarehouseResponseDto createWarehouse(WarehouseCreateDto dto) {
 
         Warehouse warehouse = warehouseMapper.toEntity(dto);
@@ -65,10 +63,7 @@ public class WarehouseService {
 
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#id"),
-            @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, allEntries = true)
-    })
+    @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#id")
     public WarehouseResponseDto updateWarehouse(UUID id, WarehouseUpdateDto dto) {
 
         Warehouse warehouse = findWarehouseOrThrow(id);
@@ -97,10 +92,7 @@ public class WarehouseService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#id"),
-            @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_PAGE_CACHE, allEntries = true)
-    })
+    @CacheEvict(cacheNames = RedisCacheConfig.WAREHOUSES_CACHE, key = "#id")
     public void deleteWarehouseProducts(UUID id, List<UUID> productIdsToDelete) {
 
         Warehouse warehouse = findWarehouseOrThrow(id);

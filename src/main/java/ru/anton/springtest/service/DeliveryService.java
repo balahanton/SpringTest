@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ public class DeliveryService {
     private final DeliveryMapper deliveryMapper;
 
     @Transactional
-    @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, allEntries = true)
     public DeliveryResponseDto createDelivery(DeliveryCreateDto dto) {
 
         Delivery delivery = deliveryMapper.toEntity(dto);
@@ -58,10 +56,7 @@ public class DeliveryService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#id"),
-            @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, allEntries = true)
-    })
+    @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#id")
     public DeliveryResponseDto updateDelivery(UUID id, DeliveryUpdateDto dto) {
 
         Delivery existingDelivery = findDeliveryOrThrow(id);
@@ -74,10 +69,7 @@ public class DeliveryService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#id"),
-            @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_PAGE_CACHE, allEntries = true)
-    })
+    @CacheEvict(cacheNames = RedisCacheConfig.DELIVERIES_CACHE, key = "#id")
     public void deleteDelivery(UUID id) {
 
         Delivery delivery = findDeliveryOrThrow(id);

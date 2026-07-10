@@ -8,14 +8,18 @@ import ru.anton.springtest.dto.OrderCreateDto;
 import ru.anton.springtest.dto.OrderResponseDto;
 import ru.anton.springtest.dto.OrderUpdateDto;
 import ru.anton.springtest.dto.UserCreateDto;
+import ru.anton.springtest.dto.UserEnrichmentClientDto;
+import ru.anton.springtest.dto.UserEnrichmentCreateClientDto;
 import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.model.Order;
+import ru.anton.springtest.model.SagaTask;
+import ru.anton.springtest.model.SagaTaskStatus;
 import ru.anton.springtest.model.User;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-06T15:30:58+0300",
+    date = "2026-07-10T10:49:01+0300",
     comments = "version: 1.6.3, compiler: IncrementalProcessingEnvironment from gradle-language-java-9.4.1.jar, environment: Java 21.0.11 (Microsoft)"
 )
 @Component
@@ -37,6 +41,27 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
+    public UserResponseDto toResponseDto(User user, UserEnrichmentClientDto enrichment) {
+        if ( user == null && enrichment == null ) {
+            return null;
+        }
+
+        UserResponseDto userResponseDto = new UserResponseDto();
+
+        if ( user != null ) {
+            userResponseDto.setId( user.getId() );
+            userResponseDto.setUsername( user.getUsername() );
+            userResponseDto.setOrders( orderListToOrderResponseDtoList( user.getOrders() ) );
+        }
+        if ( enrichment != null ) {
+            userResponseDto.setDiscountCardNumber( enrichment.getDiscountCardNumber() );
+            userResponseDto.setBalance( enrichment.getBalance() );
+        }
+
+        return userResponseDto;
+    }
+
+    @Override
     public List<UserResponseDto> toResponseDtoList(List<User> users) {
         if ( users == null ) {
             return null;
@@ -51,6 +76,21 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
+    public UserEnrichmentCreateClientDto toEnrichmentCreateDto(SagaTask task) {
+        if ( task == null ) {
+            return null;
+        }
+
+        UserEnrichmentCreateClientDto.UserEnrichmentCreateClientDtoBuilder userEnrichmentCreateClientDto = UserEnrichmentCreateClientDto.builder();
+
+        userEnrichmentCreateClientDto.userId( task.getUserId() );
+        userEnrichmentCreateClientDto.discountCardNumber( task.getDiscountCardNumber() );
+        userEnrichmentCreateClientDto.balance( task.getBalance() );
+
+        return userEnrichmentCreateClientDto.build();
+    }
+
+    @Override
     public User toEntity(UserCreateDto dto) {
         if ( dto == null ) {
             return null;
@@ -61,9 +101,32 @@ public class UserMapperImpl implements UserMapper {
         user.setUsername( dto.getUsername() );
         user.setOrders( orderCreateDtoListToOrderList( dto.getOrders() ) );
 
+        user.setEnrichmentStatus( SagaTaskStatus.PENDING );
+
         linkOrders( user );
 
         return user;
+    }
+
+    @Override
+    public SagaTask toSagaTask(User user, UserCreateDto dto) {
+        if ( user == null && dto == null ) {
+            return null;
+        }
+
+        SagaTask sagaTask = new SagaTask();
+
+        if ( user != null ) {
+            sagaTask.setUserId( user.getId() );
+        }
+        if ( dto != null ) {
+            sagaTask.setDiscountCardNumber( dto.getDiscountCardNumber() );
+            sagaTask.setBalance( dto.getBalance() );
+        }
+        sagaTask.setStatus( SagaTaskStatus.PENDING );
+        sagaTask.setAttempts( 0 );
+
+        return sagaTask;
     }
 
     @Override

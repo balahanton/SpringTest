@@ -1,9 +1,6 @@
 package ru.anton.springtest.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
@@ -18,6 +15,9 @@ import java.util.List;
 public class User extends BaseEntity {
 
     private String username;
+
+    @Enumerated(EnumType.STRING)
+    private SagaTaskStatus enrichmentStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import ru.anton.springtest.AbstractIntegrationTest;
-import ru.anton.springtest.client.EnrichmentServiceAdapter;
 import ru.anton.springtest.dto.UserEnrichmentClientDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.model.User;
