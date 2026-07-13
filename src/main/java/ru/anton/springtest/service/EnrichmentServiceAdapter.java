@@ -4,10 +4,12 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.anton.springtest.client.EnrichmentServiceClient;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
-import ru.anton.springtest.dto.UserEnrichmentCreateClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientRequestDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
+import ru.anton.springtest.exception.EntityNotFoundException;
 
 import java.util.UUID;
 
@@ -22,25 +24,29 @@ public class EnrichmentServiceAdapter {
 
     @Retry(name = RESILIENCE4J_INSTANCE, fallbackMethod = "createEnrichmentFallback")
     @EnrichmentResilience
-    public UserEnrichmentClientDto createEnrichment(UserEnrichmentCreateClientDto request) {
+    public UserEnrichmentClientResponseDto createEnrichment(UserEnrichmentClientRequestDto request) {
         return enrichmentServiceClient.createEnrichment(request);
     }
 
     @Retry(name = RESILIENCE4J_INSTANCE, fallbackMethod = "getEnrichmentFallback")
     @EnrichmentResilience
-    public UserEnrichmentClientDto getEnrichment(UUID userId) {
-        return enrichmentServiceClient.getEnrichmentByUserId(userId);
+    public UserEnrichmentClientResponseDto getEnrichment(UUID userId) {
+        try {
+            return enrichmentServiceClient.getEnrichmentByUserId(userId);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new EntityNotFoundException("Данные для обогащения не найдены");
+        }
     }
 
-    public UserEnrichmentClientDto createEnrichmentFallback(UserEnrichmentCreateClientDto request, Exception ex) {
+    public UserEnrichmentClientResponseDto createEnrichmentFallback(UserEnrichmentClientRequestDto request, Exception ex) {
         return handleFallback(request.getUserId(), "создать", ex);
     }
 
-    public UserEnrichmentClientDto getEnrichmentFallback(UUID userId, Exception ex) {
+    public UserEnrichmentClientResponseDto getEnrichmentFallback(UUID userId, Exception ex) {
         return handleFallback(userId, "получить", ex);
     }
 
-    private UserEnrichmentClientDto handleFallback(UUID userId, String action, Exception ex) {
+    private UserEnrichmentClientResponseDto handleFallback(UUID userId, String action, Exception ex) {
         log.warn("Enrichment-service недоступен при попытке {} данные обогащения для userId: {}. Причина: {}",
                 action, userId, ex.getMessage());
         throw new EnrichmentServiceUnavailableException(

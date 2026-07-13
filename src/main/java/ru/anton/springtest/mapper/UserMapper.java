@@ -20,11 +20,11 @@ public interface UserMapper {
     @Mapping(target = "id", source = "user.id")
     @Mapping(target = "discountCardNumber", source = "enrichment.discountCardNumber")
     @Mapping(target = "balance", source = "enrichment.balance")
-    UserResponseDto toResponseDto(User user, UserEnrichmentClientDto enrichment);
+    UserResponseDto toResponseDto(User user, UserEnrichmentClientResponseDto enrichment);
 
     List<UserResponseDto> toResponseDtoList(List<User> users);
 
-    UserEnrichmentCreateClientDto toEnrichmentCreateDto(SagaTask task);
+    UserEnrichmentClientRequestDto toEnrichmentCreateDto(SagaTask task);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

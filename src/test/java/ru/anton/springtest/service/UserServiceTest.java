@@ -9,16 +9,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.anton.springtest.dto.UserCreateDto;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.UserMapper;
 import ru.anton.springtest.model.Order;
-import ru.anton.springtest.model.SagaTaskStatus;
+import ru.anton.springtest.model.SagaTask;
 import ru.anton.springtest.model.User;
+import ru.anton.springtest.repository.SagaTaskRepository;
 import ru.anton.springtest.repository.UserRepository;
-import ru.anton.springtest.saga.EnrichmentSagaService;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static ru.anton.springtest.util.UserTestFixtures.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,13 +40,13 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private SagaTaskRepository sagaTaskRepository;
+
+    @Mock
     private UserMapper userMapper;
 
     @Mock
     private EnrichmentServiceAdapter enrichmentServiceAdapter;
-
-    @Mock
-    private EnrichmentSagaService enrichmentSagaService;
 
     @InjectMocks
     private UserService userService;
@@ -71,26 +72,26 @@ public class UserServiceTest {
     void createUser_savesUserAndStartsEnrichmentSaga() {
         UserCreateDto dto = userCreateDto(DEFAULT_USERNAME);
         User mappedUser = newUser(DEFAULT_USERNAME);
+        SagaTask sagaTask = new SagaTask();
 
         given(userMapper.toEntity(dto)).willReturn(mappedUser);
         given(userRepository.save(mappedUser)).willReturn(user);
+        given(userMapper.toSagaTask(user, dto)).willReturn(sagaTask);
         given(userMapper.toResponseDto(user)).willReturn(responseDto);
 
         UserResponseDto result = userService.createUser(dto);
 
         assertThat(result.getId()).isEqualTo(userId);
         verify(userRepository).save(mappedUser);
-        verify(enrichmentSagaService).startEnrichmentSaga(user, dto);
-        verifyNoInteractions(enrichmentServiceAdapter);
+        verify(sagaTaskRepository).save(sagaTask);
     }
 
     @Test
-    @DisplayName("обогащённый пользователь (DONE) — применяет данные enrichment-service к ответу")
-    void getUserById_enriched_appliesEnrichmentToResponse() {
-        user.setEnrichmentStatus(SagaTaskStatus.DONE);
+    @DisplayName("получение пользователя — всегда обогащает данными enrichment-service")
+    void getUserById_alwaysAppliesEnrichmentToResponse() {
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
-        UserEnrichmentClientDto enrichment = new UserEnrichmentClientDto();
+        UserEnrichmentClientResponseDto enrichment = new UserEnrichmentClientResponseDto();
         enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
         enrichment.setBalance(DEFAULT_BALANCE);
         given(enrichmentServiceAdapter.getEnrichment(userId)).willReturn(enrichment);
@@ -106,20 +107,7 @@ public class UserServiceTest {
 
         assertThat(result.getDiscountCardNumber()).isEqualTo(DEFAULT_DISCOUNT_CARD);
         assertThat(result.getBalance()).isEqualByComparingTo(DEFAULT_BALANCE);
-    }
-
-    @Test
-    @DisplayName("необогащённый пользователь (PENDING) — не ходит в enrichment-service")
-    void getUserById_pending_doesNotCallEnrichment() {
-        user.setEnrichmentStatus(SagaTaskStatus.PENDING);
-        given(userRepository.findById(userId)).willReturn(Optional.of(user));
-        given(userMapper.toResponseDto(user)).willReturn(responseDto);
-
-        UserResponseDto result = userService.getUserById(userId);
-
-        assertThat(result.getId()).isEqualTo(userId);
-        assertThat(result.getDiscountCardNumber()).isNull();
-        verifyNoInteractions(enrichmentServiceAdapter);
+        verify(enrichmentServiceAdapter).getEnrichment(userId);
     }
 
     @Test

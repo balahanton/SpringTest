@@ -1,5 +1,5 @@
 package ru.anton.springtest.model;
 
 public enum SagaTaskStatus {
-    PENDING, DONE, FAILED
+    PENDING, IN_PROGRESS, DONE, FAILED, COMPENSATION_FAILED
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEnrichmentCreateClientDto {
+public class UserEnrichmentClientRequestDto {
 
     private UUID userId;
     private String discountCardNumber;

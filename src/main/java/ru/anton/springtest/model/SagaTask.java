@@ -19,10 +19,14 @@ public class SagaTask extends BaseEntity {
     private UUID userId;
 
     @Enumerated(EnumType.STRING)
-    private SagaTaskStatus status;
+    @Column(nullable = false)
+    private SagaTaskStatus status = SagaTaskStatus.PENDING;
 
+    @Column(nullable = false)
     private String discountCardNumber;
+    @Column(nullable = false)
     private BigDecimal balance;
 
+    @Column(nullable = false)
     private Integer attempts = 0;
 }

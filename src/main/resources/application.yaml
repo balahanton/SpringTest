@@ -35,6 +35,11 @@ spring:
 enrichment-service:
   url: http://localhost:8081
 
+saga:
+  enrichment-worker:
+    delay-ms: 60000
+    batch-size: 50
+
 resilience4j:
   retry:
     instances:
@@ -47,10 +52,11 @@ resilience4j:
         randomized-wait-factor: 0.3
         retry-exceptions:
           - org.springframework.web.client.ResourceAccessException
-          - org.springframework.web.client.RestClientException
+          - org.springframework.web.client.HttpServerErrorException
         ignore-exceptions:
           - io.github.resilience4j.circuitbreaker.CallNotPermittedException
           - io.github.resilience4j.ratelimiter.RequestNotPermitted
+          - org.springframework.web.client.HttpClientErrorException.NotFound
 
   circuitbreaker:
     instances:
@@ -63,7 +69,9 @@ resilience4j:
         automatic-transition-from-open-to-half-open-enabled: true
         record-exceptions:
           - org.springframework.web.client.ResourceAccessException
-          - org.springframework.web.client.RestClientException
+          - org.springframework.web.client.HttpServerErrorException
+        ignore-exceptions:
+          - org.springframework.web.client.HttpClientErrorException.NotFound
 
   ratelimiter:
     instances:

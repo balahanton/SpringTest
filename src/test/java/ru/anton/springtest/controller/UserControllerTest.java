@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.anton.springtest.AbstractIntegrationTest;
 import ru.anton.springtest.dto.UserCreateDto;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.model.SagaTaskStatus;
 import ru.anton.springtest.model.User;
@@ -88,7 +88,7 @@ public class UserControllerTest extends AbstractIntegrationTest {
     void getUserById_enriched_returns200WithEnrichmentData() throws Exception {
         User saved = userRepository.save(newUserWithEnrichmentStatus(DEFAULT_USERNAME, SagaTaskStatus.DONE));
 
-        UserEnrichmentClientDto enrichment = new UserEnrichmentClientDto();
+        UserEnrichmentClientResponseDto enrichment = new UserEnrichmentClientResponseDto();
         enrichment.setUserId(saved.getId());
         enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
         enrichment.setBalance(DEFAULT_BALANCE);
@@ -101,21 +101,6 @@ public class UserControllerTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.username").value(DEFAULT_USERNAME))
                 .andExpect(jsonPath("$.discountCardNumber").value(DEFAULT_DISCOUNT_CARD))
                 .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.doubleValue()));
-    }
-
-    @Test
-    @DisplayName("GET /api/v1/users/{id} для необогащённого пользователя (PENDING) — 200 без данных карты, без похода во внешний сервис")
-    void getUserById_pending_returns200WithoutEnrichmentData() throws Exception {
-        User saved = userRepository.save(newUserWithEnrichmentStatus(DEFAULT_USERNAME, SagaTaskStatus.PENDING));
-
-        mockMvc.perform(get(USER_BY_ID_URL, saved.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(saved.getId().toString()))
-                .andExpect(jsonPath("$.username").value(DEFAULT_USERNAME))
-                .andExpect(jsonPath("$.discountCardNumber").doesNotExist())
-                .andExpect(jsonPath("$.balance").doesNotExist());
-
-        verifyNoInteractions(enrichmentServiceAdapter);
     }
 
     @Test

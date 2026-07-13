@@ -6,8 +6,8 @@ import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
-import ru.anton.springtest.dto.UserEnrichmentCreateClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
+import ru.anton.springtest.dto.UserEnrichmentClientRequestDto;
 
 import java.util.UUID;
 
@@ -15,10 +15,10 @@ import java.util.UUID;
 public interface EnrichmentServiceClient {
 
     @PostExchange
-    UserEnrichmentClientDto createEnrichment(@RequestBody UserEnrichmentCreateClientDto dto);
+    UserEnrichmentClientResponseDto createEnrichment(@RequestBody UserEnrichmentClientRequestDto dto);
 
     @GetExchange("/{userId}")
-    UserEnrichmentClientDto getEnrichmentByUserId(@PathVariable UUID userId);
+    UserEnrichmentClientResponseDto getEnrichmentByUserId(@PathVariable UUID userId);
 
     @DeleteExchange("/{userId}")
     void deleteEnrichmentByUserId(@PathVariable UUID userId);

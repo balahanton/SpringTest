@@ -8,8 +8,8 @@ import ru.anton.springtest.dto.OrderCreateDto;
 import ru.anton.springtest.dto.OrderResponseDto;
 import ru.anton.springtest.dto.OrderUpdateDto;
 import ru.anton.springtest.dto.UserCreateDto;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
-import ru.anton.springtest.dto.UserEnrichmentCreateClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientRequestDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.model.Order;
@@ -19,7 +19,7 @@ import ru.anton.springtest.model.User;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-10T10:49:01+0300",
+    date = "2026-07-13T16:04:14+0300",
     comments = "version: 1.6.3, compiler: IncrementalProcessingEnvironment from gradle-language-java-9.4.1.jar, environment: Java 21.0.11 (Microsoft)"
 )
 @Component
@@ -41,7 +41,7 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public UserResponseDto toResponseDto(User user, UserEnrichmentClientDto enrichment) {
+    public UserResponseDto toResponseDto(User user, UserEnrichmentClientResponseDto enrichment) {
         if ( user == null && enrichment == null ) {
             return null;
         }
@@ -76,18 +76,18 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public UserEnrichmentCreateClientDto toEnrichmentCreateDto(SagaTask task) {
+    public UserEnrichmentClientRequestDto toEnrichmentCreateDto(SagaTask task) {
         if ( task == null ) {
             return null;
         }
 
-        UserEnrichmentCreateClientDto.UserEnrichmentCreateClientDtoBuilder userEnrichmentCreateClientDto = UserEnrichmentCreateClientDto.builder();
+        UserEnrichmentClientRequestDto.UserEnrichmentClientRequestDtoBuilder userEnrichmentClientRequestDto = UserEnrichmentClientRequestDto.builder();
 
-        userEnrichmentCreateClientDto.userId( task.getUserId() );
-        userEnrichmentCreateClientDto.discountCardNumber( task.getDiscountCardNumber() );
-        userEnrichmentCreateClientDto.balance( task.getBalance() );
+        userEnrichmentClientRequestDto.userId( task.getUserId() );
+        userEnrichmentClientRequestDto.discountCardNumber( task.getDiscountCardNumber() );
+        userEnrichmentClientRequestDto.balance( task.getBalance() );
 
-        return userEnrichmentCreateClientDto.build();
+        return userEnrichmentClientRequestDto.build();
     }
 
     @Override

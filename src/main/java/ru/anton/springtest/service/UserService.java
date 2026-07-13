@@ -10,16 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.anton.springtest.config.RedisCacheConfig;
 import ru.anton.springtest.dto.UserCreateDto;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.UserMapper;
 import ru.anton.springtest.model.Order;
-import ru.anton.springtest.model.SagaTaskStatus;
+import ru.anton.springtest.model.SagaTask;
 import ru.anton.springtest.model.User;
+import ru.anton.springtest.repository.SagaTaskRepository;
 import ru.anton.springtest.repository.UserRepository;
-import ru.anton.springtest.saga.EnrichmentSagaService;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,15 +30,16 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final SagaTaskRepository sagaTaskRepository;
     private final UserMapper userMapper;
     private final EnrichmentServiceAdapter enrichmentServiceAdapter;
-    private final EnrichmentSagaService enrichmentSagaService;
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
         User savedUser = userRepository.save(userMapper.toEntity(dto));
 
-        enrichmentSagaService.startEnrichmentSaga(savedUser, dto);
+        SagaTask task = userMapper.toSagaTask(savedUser, dto);
+        sagaTaskRepository.save(task);
 
         log.info("Пользователь {} создан, сага обогащения запущена", savedUser.getId());
         return userMapper.toResponseDto(savedUser);
@@ -49,12 +50,7 @@ public class UserService {
     public UserResponseDto getUserById(UUID id) {
 
         User user = findUserOrThrow(id);
-
-        if (user.getEnrichmentStatus() != SagaTaskStatus.DONE) {
-            return userMapper.toResponseDto(user);
-        }
-
-        UserEnrichmentClientDto enrichment = enrichmentServiceAdapter.getEnrichment(id);
+        UserEnrichmentClientResponseDto enrichment = enrichmentServiceAdapter.getEnrichment(id);
         return userMapper.toResponseDto(user, enrichment);
     }
 
@@ -97,6 +93,11 @@ public class UserService {
         userRepository.save(user);
 
         log.info("Пользователь с ID {} и его заказы переведены в статус удаленных", id);
+    }
+
+    @CacheEvict(cacheNames = RedisCacheConfig.USERS_CACHE, key = "#id")
+    public void evictUserCache(UUID id) {
+        log.debug("Кэш пользователя {} инвалидирован", id);
     }
 
     private User findUserOrThrow(UUID id) {

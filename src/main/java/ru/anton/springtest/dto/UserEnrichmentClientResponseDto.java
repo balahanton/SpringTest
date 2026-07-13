@@ -5,18 +5,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserEnrichmentClientDto {
+public class UserEnrichmentClientResponseDto {
 
     private UUID id;
     private UUID userId;
     private String discountCardNumber;
     private BigDecimal balance;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
 }

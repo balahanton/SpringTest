@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import ru.anton.springtest.AbstractIntegrationTest;
-import ru.anton.springtest.dto.UserEnrichmentClientDto;
+import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.model.User;
 import ru.anton.springtest.repository.UserRepository;
@@ -45,7 +45,7 @@ public class UserServiceCacheTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("после deleteUser кэш инвалидируется — следующий getUserById снова идёт в БД")
     void deleteUser_evictsCache_nextGetGoesToDatabase() {
-        UserEnrichmentClientDto enrichment = new UserEnrichmentClientDto();
+        UserEnrichmentClientResponseDto enrichment = new UserEnrichmentClientResponseDto();
         enrichment.setUserId(userId);
         enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
         enrichment.setBalance(DEFAULT_BALANCE);
