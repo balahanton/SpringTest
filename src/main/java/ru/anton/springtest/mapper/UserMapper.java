@@ -26,6 +26,11 @@ public interface UserMapper {
 
     UserEnrichmentClientRequestDto toEnrichmentCreateDto(SagaTask task);
 
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "discountCardNumber", source = "dto.discountCardNumber")
+    @Mapping(target = "balance", source = "dto.balance")
+    UserEnrichmentClientRequestDto toEnrichmentRequest(User user, UserCreateDto dto);
+
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", ignore = true),

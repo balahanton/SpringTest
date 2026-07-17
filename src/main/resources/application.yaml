@@ -39,6 +39,7 @@ saga:
   enrichment-worker:
     delay-ms: 60000
     batch-size: 50
+    max-attempts: 5
 
 resilience4j:
   retry:

@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.anton.springtest.exception.EnrichmentServiceClientException;
 import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.exception.SagaExecutionException;
@@ -31,6 +32,8 @@ public class GlobalExceptionHandler {
     private static final String PROBLEM_ENRICHMENT_UNAVAILABLE_TITLE = "Enrichment Service Unavailable";
     private static final String SAGA_EXECUTION_FAILED = "Ошибка выполнения распределенной транзакции (Сага): {}";
     private static final String PROBLEM_SAGA_FAILED_TITLE = "Saga Execution Failed";
+    private static final String ENRICHMENT_SERVICE_CLIENT_ERROR = "Enrichment-service отклонил запрос: {}";
+    private static final String PROBLEM_ENRICHMENT_CLIENT_ERROR_TITLE = "Enrichment Service Rejected Request";
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail handleEntityNotFound(EntityNotFoundException ex) {
@@ -105,6 +108,18 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle(PROBLEM_SAGA_FAILED_TITLE);
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EnrichmentServiceClientException.class)
+    public ProblemDetail handleEnrichmentServiceClientException(EnrichmentServiceClientException ex) {
+        log.error(ENRICHMENT_SERVICE_CLIENT_ERROR, ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
+        problemDetail.setTitle(PROBLEM_ENRICHMENT_CLIENT_ERROR_TITLE);
         problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;

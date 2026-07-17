@@ -9,10 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.anton.springtest.config.RedisCacheConfig;
-import ru.anton.springtest.dto.UserCreateDto;
-import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
-import ru.anton.springtest.dto.UserResponseDto;
-import ru.anton.springtest.dto.UserUpdateDto;
+import ru.anton.springtest.dto.*;
+import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.UserMapper;
 import ru.anton.springtest.model.Order;
@@ -38,11 +36,21 @@ public class UserService {
     public UserResponseDto createUser(UserCreateDto dto) {
         User savedUser = userRepository.save(userMapper.toEntity(dto));
 
-        SagaTask task = userMapper.toSagaTask(savedUser, dto);
-        sagaTaskRepository.save(task);
+        UserEnrichmentClientRequestDto enrichmentRequest = userMapper.toEnrichmentRequest(savedUser, dto);
+        UserResponseDto responseDto;
 
-        log.info("Пользователь {} создан, сага обогащения запущена", savedUser.getId());
-        return userMapper.toResponseDto(savedUser);
+        try {
+            UserEnrichmentClientResponseDto enrichment = enrichmentServiceAdapter.createEnrichment(enrichmentRequest);
+            responseDto = userMapper.toResponseDto(savedUser, enrichment);
+            log.info("Пользователь {} создан и обогащен синхронно", savedUser.getId());
+        } catch (EnrichmentServiceUnavailableException ex) {
+            SagaTask task = userMapper.toSagaTask(savedUser, dto);
+            sagaTaskRepository.save(task);
+            responseDto = userMapper.toResponseDto(savedUser);
+            log.warn("Enrichment-сервис недоступен, для пользователя {} создана сага", savedUser.getId());
+        }
+
+        return responseDto;
     }
 
     @Transactional(readOnly = true)

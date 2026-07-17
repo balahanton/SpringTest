@@ -3,11 +3,13 @@ package ru.anton.springtest.service;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.anton.springtest.client.EnrichmentServiceClient;
 import ru.anton.springtest.dto.UserEnrichmentClientRequestDto;
 import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
+import ru.anton.springtest.exception.EnrichmentServiceClientException;
 import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.exception.EntityNotFoundException;
 
@@ -47,10 +49,25 @@ public class EnrichmentServiceAdapter {
     }
 
     private UserEnrichmentClientResponseDto handleFallback(UUID userId, String action, Exception ex) {
+        if (isNonRetryableClientError(ex)) {
+            log.error("Enrichment-service отклонил запрос ({} данные обогащения) для userId: {}. Причина: {}",
+                    action, userId, ex.getMessage());
+            throw new EnrichmentServiceClientException(
+                    "Enrichment-сервис отклонил запрос на " + action + " данных обогащения для userId: " + userId, ex);
+        }
+
         log.warn("Enrichment-service недоступен при попытке {} данные обогащения для userId: {}. Причина: {}",
                 action, userId, ex.getMessage());
         throw new EnrichmentServiceUnavailableException(
                 "Не удалось " + action + " данные обогащения для userId: " + userId, ex);
+    }
+
+    private boolean isNonRetryableClientError(Exception ex) {
+        if (ex instanceof HttpClientErrorException httpEx) {
+            HttpStatusCode status = httpEx.getStatusCode();
+            return status.is4xxClientError();
+        }
+        return false;
     }
 
     public void deleteEnrichment(UUID userId) {
