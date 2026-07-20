@@ -1,5 +1,6 @@
 package ru.anton.springtest;
 
+import com.redis.testcontainers.RedisContainer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -15,4 +16,11 @@ class TestcontainersConfiguration {
         return new PostgreSQLContainer(DockerImageName.parse("postgres:latest"));
     }
 
+    @Bean
+    @ServiceConnection
+    RedisContainer redisContainer() {
+        return new RedisContainer(
+                DockerImageName.parse("redis:7.2-alpine")
+        );
+    }
 }

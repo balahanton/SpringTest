@@ -12,7 +12,7 @@ import ru.anton.springtest.model.DeliveryDetails;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-06-22T11:29:41+0300",
+    date = "2026-07-20T12:35:17+0300",
     comments = "version: 1.6.3, compiler: IncrementalProcessingEnvironment from gradle-language-java-9.4.1.jar, environment: Java 21.0.11 (Microsoft)"
 )
 @Component

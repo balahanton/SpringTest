@@ -320,6 +320,8 @@ components:
       type: object
       required:
         - username
+        - discountCardNumber
+        - balance
       properties:
         username:
           type: string
@@ -329,6 +331,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OrderCreateDto'
+        discountCardNumber:
+          type: string
+          description: Номер скидочной карты
+        balance:
+          type: number
+          description: Начальный баланс скидочной карты
+          minimum: 0
 
     OrderCreateDto:
       type: object
@@ -378,6 +387,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OrderResponseDto'
+        discountCardNumber:
+          type: string
+          description: Номер скидочной карты
+          nullable: true
+        balance:
+          type: number
+          description: Баланс скидочной карты
+          nullable: true
 
     OrderResponseDto:
       type: object

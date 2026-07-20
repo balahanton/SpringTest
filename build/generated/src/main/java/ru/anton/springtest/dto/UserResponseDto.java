@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,7 @@ import jakarta.annotation.Generated;
  * UserResponseDto
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-22T11:29:31.079268100+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-07-20T12:35:07.455428200+03:00[Europe/Moscow]", comments = "Generator version: 7.4.0")
 public class UserResponseDto {
 
   private UUID id;
@@ -31,6 +32,10 @@ public class UserResponseDto {
 
   @Valid
   private List<@Valid OrderResponseDto> orders;
+
+  private String discountCardNumber = null;
+
+  private BigDecimal balance = null;
 
   public UserResponseDto id(UUID id) {
     this.id = id;
@@ -100,6 +105,46 @@ public class UserResponseDto {
     this.orders = orders;
   }
 
+  public UserResponseDto discountCardNumber(String discountCardNumber) {
+    this.discountCardNumber = discountCardNumber;
+    return this;
+  }
+
+  /**
+   * Номер скидочной карты
+   * @return discountCardNumber
+  */
+  
+  @Schema(name = "discountCardNumber", description = "Номер скидочной карты", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("discountCardNumber")
+  public String getDiscountCardNumber() {
+    return discountCardNumber;
+  }
+
+  public void setDiscountCardNumber(String discountCardNumber) {
+    this.discountCardNumber = discountCardNumber;
+  }
+
+  public UserResponseDto balance(BigDecimal balance) {
+    this.balance = balance;
+    return this;
+  }
+
+  /**
+   * Баланс скидочной карты
+   * @return balance
+  */
+  @Valid 
+  @Schema(name = "balance", description = "Баланс скидочной карты", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("balance")
+  public BigDecimal getBalance() {
+    return balance;
+  }
+
+  public void setBalance(BigDecimal balance) {
+    this.balance = balance;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -111,12 +156,14 @@ public class UserResponseDto {
     UserResponseDto userResponseDto = (UserResponseDto) o;
     return Objects.equals(this.id, userResponseDto.id) &&
         Objects.equals(this.username, userResponseDto.username) &&
-        Objects.equals(this.orders, userResponseDto.orders);
+        Objects.equals(this.orders, userResponseDto.orders) &&
+        Objects.equals(this.discountCardNumber, userResponseDto.discountCardNumber) &&
+        Objects.equals(this.balance, userResponseDto.balance);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, username, orders);
+    return Objects.hash(id, username, orders, discountCardNumber, balance);
   }
 
   @Override
@@ -126,6 +173,8 @@ public class UserResponseDto {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    orders: ").append(toIndentedString(orders)).append("\n");
+    sb.append("    discountCardNumber: ").append(toIndentedString(discountCardNumber)).append("\n");
+    sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
     sb.append("}");
     return sb.toString();
   }
