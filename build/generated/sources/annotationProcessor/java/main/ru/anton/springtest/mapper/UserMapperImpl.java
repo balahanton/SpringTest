@@ -19,7 +19,7 @@ import ru.anton.springtest.model.User;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-13T16:04:14+0300",
+    date = "2026-07-20T12:35:17+0300",
     comments = "version: 1.6.3, compiler: IncrementalProcessingEnvironment from gradle-language-java-9.4.1.jar, environment: Java 21.0.11 (Microsoft)"
 )
 @Component
@@ -86,6 +86,25 @@ public class UserMapperImpl implements UserMapper {
         userEnrichmentClientRequestDto.userId( task.getUserId() );
         userEnrichmentClientRequestDto.discountCardNumber( task.getDiscountCardNumber() );
         userEnrichmentClientRequestDto.balance( task.getBalance() );
+
+        return userEnrichmentClientRequestDto.build();
+    }
+
+    @Override
+    public UserEnrichmentClientRequestDto toEnrichmentRequest(User user, UserCreateDto dto) {
+        if ( user == null && dto == null ) {
+            return null;
+        }
+
+        UserEnrichmentClientRequestDto.UserEnrichmentClientRequestDtoBuilder userEnrichmentClientRequestDto = UserEnrichmentClientRequestDto.builder();
+
+        if ( user != null ) {
+            userEnrichmentClientRequestDto.userId( user.getId() );
+        }
+        if ( dto != null ) {
+            userEnrichmentClientRequestDto.discountCardNumber( dto.getDiscountCardNumber() );
+            userEnrichmentClientRequestDto.balance( dto.getBalance() );
+        }
 
         return userEnrichmentClientRequestDto.build();
     }

@@ -32,23 +32,23 @@ import static ru.anton.springtest.util.WarehouseTestFixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("WarehouseService — юнит-тесты")
-public class WarehouseServiceTest {
+class WarehouseServiceTest {
 
     @Mock
-    private WarehouseRepository warehouseRepository;
+    WarehouseRepository warehouseRepository;
 
     @Mock
-    private ProductService productService;
+    ProductService productService;
 
     @Mock
-    private WarehouseMapper warehouseMapper;
+    WarehouseMapper warehouseMapper;
 
     @InjectMocks
-    private WarehouseService warehouseService;
+    WarehouseService warehouseService;
 
-    private UUID warehouseId;
-    private Warehouse warehouse;
-    private WarehouseResponseDto responseDto;
+    UUID warehouseId;
+    Warehouse warehouse;
+    WarehouseResponseDto responseDto;
 
     @BeforeEach
     void setUp() {

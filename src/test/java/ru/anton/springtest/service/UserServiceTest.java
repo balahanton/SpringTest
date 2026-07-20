@@ -12,6 +12,7 @@ import ru.anton.springtest.dto.UserCreateDto;
 import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.dto.UserResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
+import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.UserMapper;
 import ru.anton.springtest.model.Order;
@@ -34,26 +35,26 @@ import static ru.anton.springtest.util.UserTestFixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService — юнит-тесты")
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @Mock
-    private SagaTaskRepository sagaTaskRepository;
+    SagaTaskRepository sagaTaskRepository;
 
     @Mock
-    private UserMapper userMapper;
+    UserMapper userMapper;
 
     @Mock
-    private EnrichmentServiceAdapter enrichmentServiceAdapter;
+    EnrichmentServiceAdapter enrichmentServiceAdapter;
 
     @InjectMocks
-    private UserService userService;
+    UserService userService;
 
-    private UUID userId;
-    private User user;
-    private UserResponseDto responseDto;
+    UUID userId;
+    User user;
+    UserResponseDto responseDto;
 
     @BeforeEach
     void setUp() {
@@ -68,6 +69,34 @@ public class UserServiceTest {
     }
 
     @Test
+    @DisplayName("создаёт пользователя, синхронно обогащает при доступном enrichment-сервисе")
+    void createUser_enrichmentAvailable_appliesEnrichmentSynchronously() {
+        UserCreateDto dto = userCreateDto(DEFAULT_USERNAME);
+        User mappedUser = newUser(DEFAULT_USERNAME);
+
+        UserEnrichmentClientResponseDto enrichment = new UserEnrichmentClientResponseDto();
+        enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
+        enrichment.setBalance(DEFAULT_BALANCE);
+
+        UserResponseDto enrichedResponse = new UserResponseDto();
+        enrichedResponse.setId(userId);
+        enrichedResponse.setUsername(DEFAULT_USERNAME);
+        enrichedResponse.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
+        enrichedResponse.setBalance(DEFAULT_BALANCE);
+
+        given(userMapper.toEntity(dto)).willReturn(mappedUser);
+        given(userRepository.save(mappedUser)).willReturn(user);
+        given(enrichmentServiceAdapter.createEnrichment(any())).willReturn(enrichment);
+        given(userMapper.toResponseDto(user, enrichment)).willReturn(enrichedResponse);
+
+        UserResponseDto result = userService.createUser(dto);
+
+        assertThat(result.getDiscountCardNumber()).isEqualTo(DEFAULT_DISCOUNT_CARD);
+        assertThat(result.getBalance()).isEqualByComparingTo(DEFAULT_BALANCE);
+        verify(sagaTaskRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("создаёт пользователя, сохраняет и запускает сагу обогащения")
     void createUser_savesUserAndStartsEnrichmentSaga() {
         UserCreateDto dto = userCreateDto(DEFAULT_USERNAME);
@@ -76,6 +105,8 @@ public class UserServiceTest {
 
         given(userMapper.toEntity(dto)).willReturn(mappedUser);
         given(userRepository.save(mappedUser)).willReturn(user);
+        given(enrichmentServiceAdapter.createEnrichment(any()))
+                .willThrow(new EnrichmentServiceUnavailableException("unavailable", null));
         given(userMapper.toSagaTask(user, dto)).willReturn(sagaTask);
         given(userMapper.toResponseDto(user)).willReturn(responseDto);
 
@@ -84,6 +115,7 @@ public class UserServiceTest {
         assertThat(result.getId()).isEqualTo(userId);
         verify(userRepository).save(mappedUser);
         verify(sagaTaskRepository).save(sagaTask);
+        verify(enrichmentServiceAdapter).createEnrichment(any());
     }
 
     @Test

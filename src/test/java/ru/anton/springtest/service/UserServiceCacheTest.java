@@ -21,18 +21,18 @@ import static org.mockito.Mockito.*;
 import static ru.anton.springtest.util.UserTestFixtures.*;
 
 @DisplayName("UserService — тесты Redis-кэша")
-public class UserServiceCacheTest extends AbstractIntegrationTest {
+class UserServiceCacheTest extends AbstractIntegrationTest {
 
     @Autowired
-    private UserService userService;
+    UserService userService;
 
     @MockitoSpyBean
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @MockitoBean
-    private EnrichmentServiceAdapter enrichmentServiceAdapter;
+    EnrichmentServiceAdapter enrichmentServiceAdapter;
 
-    private UUID userId;
+    UUID userId;
 
     @BeforeEach
     void setUp() {

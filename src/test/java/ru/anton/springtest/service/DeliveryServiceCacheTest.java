@@ -22,15 +22,15 @@ import static org.mockito.Mockito.verify;
 import static ru.anton.springtest.util.DeliveryTestFixtures.*;
 
 @DisplayName("DeliveryService — тесты Redis-кэша")
-public class DeliveryServiceCacheTest extends AbstractIntegrationTest {
+class DeliveryServiceCacheTest extends AbstractIntegrationTest {
 
     @Autowired
-    private DeliveryService deliveryService;
+    DeliveryService deliveryService;
 
     @MockitoSpyBean
-    private DeliveryRepository deliveryRepository;
+    DeliveryRepository deliveryRepository;
 
-    private UUID deliveryId;
+    UUID deliveryId;
 
     @BeforeEach
     void setUp() {

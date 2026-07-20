@@ -19,14 +19,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.anton.springtest.util.DeliveryTestFixtures.*;
 
 @DisplayName("DeliveryController — интеграционные тесты")
-public class DeliveryControllerTest extends AbstractIntegrationTest {
+class DeliveryControllerTest extends AbstractIntegrationTest {
 
-    private static final String DELIVERIES_URL = "/api/v1/deliveries";
-    private static final String DELIVERY_BY_ID_URL = "/api/v1/deliveries/{id}";
-    private static final String INVALID_FIELDS_PATH = "$.invalid_fields";
+    static final String DELIVERIES_URL = "/api/v1/deliveries";
+    static final String DELIVERY_BY_ID_URL = "/api/v1/deliveries/{id}";
+    static final String INVALID_FIELDS_PATH = "$.invalid_fields";
 
     @Autowired
-    private DeliveryRepository deliveryRepository;
+    DeliveryRepository deliveryRepository;
 
     @Test
     @DisplayName("POST /api/v1/deliveries с валидным телом — 201 и тело с id")

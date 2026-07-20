@@ -25,12 +25,12 @@ import static ru.anton.springtest.util.WarehouseTestFixtures.*;
 @DisplayName("WarehouseController — интеграционные тесты")
 class WarehouseControllerTest extends AbstractIntegrationTest {
 
-    private static final String WAREHOUSES_URL = "/api/v1/warehouses";
-    private static final String WAREHOUSE_BY_ID_URL = "/api/v1/warehouses/{id}";
-    private static final String INVALID_FIELDS_PATH = "$.invalid_fields";
+    static final String WAREHOUSES_URL = "/api/v1/warehouses";
+    static final String WAREHOUSE_BY_ID_URL = "/api/v1/warehouses/{id}";
+    static final String INVALID_FIELDS_PATH = "$.invalid_fields";
 
     @Autowired
-    private WarehouseRepository warehouseRepository;
+    WarehouseRepository warehouseRepository;
 
     @Test
     @DisplayName("POST /api/v1/warehouses с валидным телом — 201 и тело с id")

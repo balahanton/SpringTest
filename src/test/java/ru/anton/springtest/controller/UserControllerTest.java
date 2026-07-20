@@ -8,6 +8,7 @@ import ru.anton.springtest.AbstractIntegrationTest;
 import ru.anton.springtest.dto.UserCreateDto;
 import ru.anton.springtest.dto.UserEnrichmentClientResponseDto;
 import ru.anton.springtest.dto.UserUpdateDto;
+import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.model.SagaTaskStatus;
 import ru.anton.springtest.model.User;
 import ru.anton.springtest.repository.UserRepository;
@@ -15,7 +16,8 @@ import ru.anton.springtest.service.EnrichmentServiceAdapter;
 
 import java.util.UUID;
 
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,22 +26,46 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.anton.springtest.util.UserTestFixtures.*;
 
 @DisplayName("UserController — интеграционные тесты")
-public class UserControllerTest extends AbstractIntegrationTest {
+class UserControllerTest extends AbstractIntegrationTest {
 
-    private static final String USERS_URL = "/api/v1/users";
-    private static final String USER_BY_ID_URL = "/api/v1/users/{id}";
-    private static final String INVALID_FIELDS_PATH = "$.invalid_fields";
+    static final String USERS_URL = "/api/v1/users";
+    static final String USER_BY_ID_URL = "/api/v1/users/{id}";
+    static final String INVALID_FIELDS_PATH = "$.invalid_fields";
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @MockitoBean
-    private EnrichmentServiceAdapter enrichmentServiceAdapter;
+    EnrichmentServiceAdapter enrichmentServiceAdapter;
 
     @Test
-    @DisplayName("POST /api/v1/users с валидным телом — 201, тело с id, синхронный вызов enrichment не выполняется")
-    void createUser_valid_returns201WithId() throws Exception {
+    @DisplayName("POST /api/v1/users с валидным телом — 201, тело с id, синхронный enrichment применяется сразу")
+    void createUser_valid_returns201WithEnrichmentData() throws Exception {
         UserCreateDto dto = userCreateDto(DEFAULT_USERNAME);
+
+        UserEnrichmentClientResponseDto enrichment = new UserEnrichmentClientResponseDto();
+        enrichment.setDiscountCardNumber(DEFAULT_DISCOUNT_CARD);
+        enrichment.setBalance(DEFAULT_BALANCE);
+
+        when(enrichmentServiceAdapter.createEnrichment(any())).thenReturn(enrichment);
+
+        mockMvc.perform(postJson(USERS_URL, dto))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.username").value(DEFAULT_USERNAME))
+                .andExpect(jsonPath("$.discountCardNumber").value(DEFAULT_DISCOUNT_CARD))
+                .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.doubleValue()));
+
+        verify(enrichmentServiceAdapter).createEnrichment(any());
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/users, enrichment недоступен — 201, тело без данных карты, создаётся сага")
+    void createUser_enrichmentUnavailable_returns201WithoutEnrichmentData() throws Exception {
+        UserCreateDto dto = userCreateDto(DEFAULT_USERNAME);
+
+        when(enrichmentServiceAdapter.createEnrichment(any()))
+                .thenThrow(new EnrichmentServiceUnavailableException("unavailable", new RuntimeException("connection refused")));
 
         mockMvc.perform(postJson(USERS_URL, dto))
                 .andExpect(status().isCreated())
@@ -48,7 +74,7 @@ public class UserControllerTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.discountCardNumber").doesNotExist())
                 .andExpect(jsonPath("$.balance").doesNotExist());
 
-        verifyNoInteractions(enrichmentServiceAdapter);
+        verify(enrichmentServiceAdapter).createEnrichment(any());
     }
 
     @Test

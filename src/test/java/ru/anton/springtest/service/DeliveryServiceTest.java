@@ -29,20 +29,20 @@ import static ru.anton.springtest.util.DeliveryTestFixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("DeliveryService — юнит-тесты")
-public class DeliveryServiceTest {
+class DeliveryServiceTest {
 
     @Mock
-    private DeliveryRepository deliveryRepository;
+    DeliveryRepository deliveryRepository;
 
     @Mock
-    private DeliveryMapper deliveryMapper;
+    DeliveryMapper deliveryMapper;
 
     @InjectMocks
-    private DeliveryService deliveryService;
+    DeliveryService deliveryService;
 
-    private UUID deliveryId;
-    private Delivery delivery;
-    private DeliveryResponseDto responseDto;
+    UUID deliveryId;
+    Delivery delivery;
+    DeliveryResponseDto responseDto;
 
     @BeforeEach
     void setUp() {

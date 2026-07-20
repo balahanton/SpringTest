@@ -19,15 +19,15 @@ import static ru.anton.springtest.util.WarehouseTestFixtures.DEFAULT_WAREHOUSE_N
 import static ru.anton.springtest.util.WarehouseTestFixtures.newWarehouse;
 
 @DisplayName("WarehouseService — тесты Redis-кэша")
-public class WarehouseServiceCacheTest extends AbstractIntegrationTest {
+class WarehouseServiceCacheTest extends AbstractIntegrationTest {
 
     @Autowired
-    private WarehouseService warehouseService;
+    WarehouseService warehouseService;
 
     @MockitoSpyBean
-    private WarehouseRepository warehouseRepository;
+    WarehouseRepository warehouseRepository;
 
-    private UUID warehouseId;
+    UUID warehouseId;
 
     @BeforeEach
     void setUp() {

@@ -42,7 +42,6 @@ public class UserService {
         try {
             UserEnrichmentClientResponseDto enrichment = enrichmentServiceAdapter.createEnrichment(enrichmentRequest);
             responseDto = userMapper.toResponseDto(savedUser, enrichment);
-            log.info("Пользователь {} создан и обогащен синхронно", savedUser.getId());
         } catch (EnrichmentServiceUnavailableException ex) {
             SagaTask task = userMapper.toSagaTask(savedUser, dto);
             sagaTaskRepository.save(task);
