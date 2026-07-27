@@ -14,10 +14,14 @@ import ru.anton.springtest.exception.EnrichmentServiceUnavailableException;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.UserMapper;
 import ru.anton.springtest.model.Order;
+import ru.anton.springtest.model.OutboxEvent;
 import ru.anton.springtest.model.SagaTask;
 import ru.anton.springtest.model.User;
+import ru.anton.springtest.repository.OutboxEventRepository;
 import ru.anton.springtest.repository.SagaTaskRepository;
 import ru.anton.springtest.repository.UserRepository;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,16 +31,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final String USER_CREATED_EVENT_TYPE = "UserCreated";
+
     private final UserRepository userRepository;
     private final SagaTaskRepository sagaTaskRepository;
+    private final OutboxEventRepository outboxEventRepository;
     private final UserMapper userMapper;
     private final EnrichmentServiceAdapter enrichmentServiceAdapter;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
         User savedUser = userRepository.save(userMapper.toEntity(dto));
 
         UserEnrichmentClientRequestDto enrichmentRequest = userMapper.toEnrichmentRequest(savedUser, dto);
+        saveOutboxEvent(savedUser.getId(), enrichmentRequest);
         UserResponseDto responseDto;
 
         try {
@@ -51,6 +60,20 @@ public class UserService {
 
         return responseDto;
     }
+
+    private void saveOutboxEvent(UUID userId, UserEnrichmentClientRequestDto payload) {
+        try {
+            OutboxEvent event = new OutboxEvent();
+            event.setId(UUID.randomUUID());
+            event.setEventType(USER_CREATED_EVENT_TYPE);
+            event.setAggregateId(userId);
+            event.setPayload(objectMapper.writeValueAsString(payload));
+            outboxEventRepository.save(event);
+        } catch (JacksonException ex) {
+            throw new IllegalStateException("Не удалось сериализовать outbox-событие для userId " + userId, ex);
+        }
+    }
+
 
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = RedisCacheConfig.USERS_CACHE, key = "#id")

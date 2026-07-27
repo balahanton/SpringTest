@@ -33,6 +33,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'org.springframework.boot:spring-boot-starter-kafka'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
