@@ -14,6 +14,7 @@ import java.util.UUID;
 public class OutboxEvent {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "event_type", nullable = false)
@@ -37,4 +38,10 @@ public class OutboxEvent {
 
     @Column(name = "sent_at")
     private OffsetDateTime sentAt;
+
+    @Column(name = "claimed_at")
+    private OffsetDateTime claimedAt;
+
+    @Column(name = "next_attempt_at")
+    private OffsetDateTime nextAttemptAt;
 }

@@ -1,5 +1,5 @@
 package ru.anton.springtest.model;
 
 public enum OutboxEventStatus {
-    NEW, SENT, FAILED
+    NEW, PROCESSING, SENT, FAILED
 }

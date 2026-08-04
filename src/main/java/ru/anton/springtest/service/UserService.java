@@ -64,7 +64,6 @@ public class UserService {
     private void saveOutboxEvent(UUID userId, UserEnrichmentClientRequestDto payload) {
         try {
             OutboxEvent event = new OutboxEvent();
-            event.setId(UUID.randomUUID());
             event.setEventType(USER_CREATED_EVENT_TYPE);
             event.setAggregateId(userId);
             event.setPayload(objectMapper.writeValueAsString(payload));

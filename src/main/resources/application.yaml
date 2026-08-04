@@ -48,6 +48,9 @@ outbox:
     delay-ms: 5000
     batch-size: 50
     topic: user.created
+    stale-timeout-ms: 120000
+    max-attempts: 5
+    retry-base-delay-ms: 2000
 
 enrichment-service:
   url: http://localhost:8081
