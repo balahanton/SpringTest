@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.anton.springtest.config.RedisCacheConfig;
 import ru.anton.springtest.dto.DeliveryCreateDto;
+import ru.anton.springtest.dto.DeliveryCreatedEventPayloadDto;
 import ru.anton.springtest.dto.DeliveryResponseDto;
 import ru.anton.springtest.dto.DeliveryUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
@@ -27,12 +28,18 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
+    private final OutboxEventService outboxEventService;
+
+    private static final String DELIVERY_CREATED_EVENT_TYPE = "DeliveryCreated";
 
     @Transactional
     public DeliveryResponseDto createDelivery(DeliveryCreateDto dto) {
 
         Delivery delivery = deliveryMapper.toEntity(dto);
         Delivery savedDelivery = deliveryRepository.save(delivery);
+
+        DeliveryCreatedEventPayloadDto eventPayload = deliveryMapper.toDeliveryCreatedEventPayloadDto(savedDelivery);
+        outboxEventService.save(DELIVERY_CREATED_EVENT_TYPE, savedDelivery.getId(), eventPayload);
 
         log.info("Доставка успешно создана с ID: {}", savedDelivery.getId());
         return deliveryMapper.toResponseDto(savedDelivery);

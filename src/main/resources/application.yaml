@@ -47,10 +47,12 @@ outbox:
   publisher:
     delay-ms: 5000
     batch-size: 50
-    topic: user.created
+    default-topic: delivery.created
     stale-timeout-ms: 120000
     max-attempts: 5
     retry-base-delay-ms: 2000
+    topic-mapping:
+      DeliveryCreated: delivery.created
 
 enrichment-service:
   url: http://localhost:8081

@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -30,8 +31,11 @@ public class OutboxEventPublisher {
     @Value("${outbox.publisher.batch-size:50}")
     private int batchSize;
 
-    @Value("${outbox.publisher.topic:user.created}")
-    private String topic;
+    @Value("${outbox.publisher.default-topic:user.created}")
+    private String defaultTopic;
+
+    @Value("#{${outbox.publisher.topic-mapping:{}}}")
+    private Map<String, String> topicMapping;
 
     @Value("${outbox.publisher.stale-timeout-ms:120000}")
     private long staleTimeoutMs;
@@ -62,10 +66,13 @@ public class OutboxEventPublisher {
     }
 
     private void publishEvent(OutboxEvent event) {
+        String targetTopic = resolveTopic(event.getEventType());
+
         try {
             ProducerRecord<String, String> record = new ProducerRecord<>(
-                    topic, null, event.getAggregateId().toString(), event.getPayload());
+                    targetTopic, null, event.getAggregateId().toString(), event.getPayload());
             record.headers().add(new RecordHeader("eventId", event.getId().toString().getBytes(StandardCharsets.UTF_8)));
+
             kafkaTemplate.send(record).get();
 
             transactionTemplate.executeWithoutResult(status -> {
@@ -73,10 +80,21 @@ public class OutboxEventPublisher {
                 event.setSentAt(OffsetDateTime.now());
                 outboxEventRepository.save(event);
             });
-            log.info("Событие {} отправлено в Kafka для aggregateId {}", event.getId(), event.getAggregateId());
+            log.info("Событие {} ({}) отправлено в топик {} для aggregateId {}",
+                    event.getId(), event.getEventType(), targetTopic, event.getAggregateId());
         } catch (Exception ex) {
             handleFailure(event, ex);
         }
+    }
+
+    private String resolveTopic(String eventType) {
+        String mapped = topicMapping.get(eventType);
+        if (mapped == null) {
+            log.warn("Для eventType '{}' не найден явный маппинг топика, используется default-topic '{}'",
+                    eventType, defaultTopic);
+            return defaultTopic;
+        }
+        return mapped;
     }
 
     private void handleFailure(OutboxEvent event, Exception ex) {
@@ -88,6 +106,7 @@ public class OutboxEventPublisher {
             transactionTemplate.executeWithoutResult(status -> {
                 event.setStatus(OutboxEventStatus.FAILED);
                 event.setAttempts(attempts);
+                event.setClaimedAt(null);
                 outboxEventRepository.save(event);
             });
             return;
@@ -103,6 +122,7 @@ public class OutboxEventPublisher {
             event.setStatus(OutboxEventStatus.NEW);
             event.setAttempts(attempts);
             event.setNextAttemptAt(nextAttemptAt);
+            event.setClaimedAt(null);
             outboxEventRepository.save(event);
         });
     }

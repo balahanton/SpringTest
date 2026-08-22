@@ -33,6 +33,9 @@ public interface DeliveryMapper {
     })
     void updateEntity(DeliveryUpdateDto dto, @MappingTarget Delivery delivery);
 
+    @Mapping(target = "deliveryId", source = "id")
+    DeliveryCreatedEventPayloadDto toDeliveryCreatedEventPayloadDto(Delivery delivery);
+
     default DeliveryDetailsResponseDto toDetailsResponseDto(DeliveryDetails details) {
         if (details == null) {
             return null;

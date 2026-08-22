@@ -27,20 +27,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    private static final String USER_CREATED_EVENT_TYPE = "UserCreated";
-
     private final UserRepository userRepository;
     private final SagaTaskRepository sagaTaskRepository;
     private final UserMapper userMapper;
     private final EnrichmentServiceAdapter enrichmentServiceAdapter;
-    private final OutboxEventService outboxEventService;
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
         User savedUser = userRepository.save(userMapper.toEntity(dto));
 
         UserEnrichmentClientRequestDto enrichmentRequest = userMapper.toEnrichmentRequest(savedUser, dto);
-        outboxEventService.save(USER_CREATED_EVENT_TYPE, savedUser.getId(), enrichmentRequest);
         UserResponseDto responseDto;
         try {
             UserEnrichmentClientResponseDto enrichment = enrichmentServiceAdapter.createEnrichment(enrichmentRequest);
