@@ -1,5 +1,6 @@
 package ru.anton.springtest.controller;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,14 @@ import ru.anton.springtest.dto.DeliveryCreateDto;
 import ru.anton.springtest.dto.DeliveryDetailsCreateDto;
 import ru.anton.springtest.dto.DeliveryUpdateDto;
 import ru.anton.springtest.model.Delivery;
+import ru.anton.springtest.model.OutboxEvent;
 import ru.anton.springtest.repository.DeliveryRepository;
+import ru.anton.springtest.repository.OutboxEventRepository;
 
+import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -28,6 +33,9 @@ class DeliveryControllerTest extends AbstractIntegrationTest {
     @Autowired
     DeliveryRepository deliveryRepository;
 
+    @Autowired
+    OutboxEventRepository outboxEventRepository;
+
     @Test
     @DisplayName("POST /api/v1/deliveries с валидным телом — 201 и тело с id")
     void createDelivery_valid_returns201WithId() throws Exception {
@@ -37,6 +45,24 @@ class DeliveryControllerTest extends AbstractIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.address").value(DEFAULT_ADDRESS));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/deliveries — создаёт outbox-событие DeliveryCreated для новой доставки")
+    void createDelivery_valid_createsOutboxEvent() throws Exception {
+        DeliveryCreateDto dto = deliveryCreateDto(DEFAULT_ADDRESS, DEFAULT_STATUS);
+
+        String response = mockMvc.perform(postJson(DELIVERIES_URL, dto))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        UUID deliveryId = UUID.fromString(JsonPath.read(response, "$.id").toString());
+
+        List<OutboxEvent> events = outboxEventRepository.findAll();
+        assertThat(events).hasSize(1);
+        OutboxEvent event = events.getFirst();
+        assertThat(event.getEventType()).isEqualTo("DeliveryCreated");
+        assertThat(event.getAggregateId()).isEqualTo(deliveryId);
+        assertThat(event.getPayload()).contains(DEFAULT_ADDRESS);
     }
 
     @Test

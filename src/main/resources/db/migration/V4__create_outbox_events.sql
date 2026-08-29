@@ -9,7 +9,8 @@ CREATE TABLE spring_test.outbox_events
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT now(),
     sent_at         TIMESTAMPTZ,
     claimed_at      TIMESTAMPTZ,
-    next_attempt_at TIMESTAMPTZ
+    next_attempt_at TIMESTAMPTZ,
+    claim_token     UUID
 );
 
 CREATE INDEX idx_outbox_events_status_created_at

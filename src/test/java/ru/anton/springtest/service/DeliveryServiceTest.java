@@ -12,6 +12,7 @@ import ru.anton.springtest.dto.DeliveryResponseDto;
 import ru.anton.springtest.dto.DeliveryUpdateDto;
 import ru.anton.springtest.exception.EntityNotFoundException;
 import ru.anton.springtest.mapper.DeliveryMapper;
+import ru.anton.springtest.dto.DeliveryCreatedEventPayloadDto;
 import ru.anton.springtest.model.Delivery;
 import ru.anton.springtest.model.DeliveryDetails;
 import ru.anton.springtest.repository.DeliveryRepository;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -36,6 +38,9 @@ class DeliveryServiceTest {
 
     @Mock
     DeliveryMapper deliveryMapper;
+
+    @Mock
+    OutboxEventService outboxEventService;
 
     @InjectMocks
     DeliveryService deliveryService;
@@ -65,14 +70,17 @@ class DeliveryServiceTest {
         @DisplayName("создаёт доставку через маппер и репозиторий")
         void createDelivery_savesAndReturnsDto() {
             var dto = deliveryCreateDto(DEFAULT_ADDRESS, DEFAULT_STATUS);
+            var eventPayload = DeliveryCreatedEventPayloadDto.builder().deliveryId(deliveryId).build();
             given(deliveryMapper.toEntity(dto)).willReturn(delivery);
             given(deliveryRepository.save(delivery)).willReturn(delivery);
             given(deliveryMapper.toResponseDto(delivery)).willReturn(responseDto);
+            given(deliveryMapper.toDeliveryCreatedEventPayloadDto(delivery)).willReturn(eventPayload);
 
             DeliveryResponseDto result = deliveryService.createDelivery(dto);
 
             assertThat(result.getId()).isEqualTo(deliveryId);
             verify(deliveryRepository).save(delivery);
+            verify(outboxEventService).save(eq("DeliveryCreated"), eq(deliveryId), eq(eventPayload));
         }
     }
 

@@ -44,4 +44,7 @@ public class OutboxEvent {
 
     @Column(name = "next_attempt_at")
     private OffsetDateTime nextAttemptAt;
+
+    @Column(name = "claim_token")
+    private UUID claimToken;
 }
