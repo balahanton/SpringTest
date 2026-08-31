@@ -55,15 +55,20 @@ public class OutboxEventPublisher {
     }
 
     private CompletableFuture<Void> publishEvent(OutboxEvent event) {
-        String targetTopic = resolveTopic(event.getEventType());
-        ProducerRecord<String, String> record = buildRecord(event, targetTopic);
+        try {
+            String targetTopic = resolveTopic(event.getEventType());
+            ProducerRecord<String, String> record = buildRecord(event, targetTopic);
 
-        return kafkaTemplate.send(record)
-                .thenAccept(result -> onSendSuccess(event, targetTopic))
-                .exceptionally(ex -> {
-                    handleFailure(event, ex);
-                    return null;
-                });
+            return kafkaTemplate.send(record)
+                    .thenAccept(result -> onSendSuccess(event, targetTopic))
+                    .exceptionally(ex -> {
+                        handleFailure(event, ex);
+                        return null;
+                    });
+        } catch (Exception ex) {
+            handleFailure(event, ex);
+            return CompletableFuture.completedFuture(null);
+        }
     }
 
     private ProducerRecord<String, String> buildRecord(OutboxEvent event, String targetTopic) {
