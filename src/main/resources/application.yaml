@@ -32,6 +32,28 @@ spring:
       use-key-prefix: true
       key-prefix: "springtest:cache:"
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        retries: 500
+
+outbox:
+  publisher:
+    delay-ms: 5000
+    batch-size: 50
+    default-topic: delivery.created
+    stale-timeout-ms: 120000
+    max-attempts: 5
+    retry-base-delay-ms: 2000
+    topic-mapping:
+      DeliveryCreated: delivery.created
+
 enrichment-service:
   url: http://localhost:8081
 

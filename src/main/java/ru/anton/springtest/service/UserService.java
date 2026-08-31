@@ -38,7 +38,6 @@ public class UserService {
 
         UserEnrichmentClientRequestDto enrichmentRequest = userMapper.toEnrichmentRequest(savedUser, dto);
         UserResponseDto responseDto;
-
         try {
             UserEnrichmentClientResponseDto enrichment = enrichmentServiceAdapter.createEnrichment(enrichmentRequest);
             responseDto = userMapper.toResponseDto(savedUser, enrichment);
